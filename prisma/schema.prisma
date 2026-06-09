@@ -1,45 +1,10 @@
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
-}
-
-// ─────────────────────────────────────────────
-// Enums
-// ─────────────────────────────────────────────
-
-enum GroupMemberRole {
-  HOST_CAPABLE
-  MEMBER
-}
-
-enum SessionStatus {
-  DRAFT
-  ACTIVE
-  ENDED
-  SETTLED
-}
-
-enum RoundingMode {
-  BOUNCE
-  CARRY_FORWARD
-}
-
-enum TransactionKind {
-  STANDARD
-  BOUNCE_QUALIFIER
-  BOUNCE_RETURN
-}
-
-enum AlertType {
-  SESSION_ENDED
-  SETTLEMENT_READY
-  PAYMENT_CONFIRMED
-  GROUP_INVITE
-  PAYMENT_REMINDER
 }
 
 // ─────────────────────────────────────────────
@@ -56,13 +21,13 @@ model User {
   createdAt       DateTime @default(now())
 
   // Relations
-  groupsCreated      Group[]               @relation("GroupCreator")
-  groupMemberships   GroupMember[]
-  hostedSessions     Session[]             @relation("SessionHost")
-  sessionPlayers     SessionPlayer[]
-  carriedDebts       CarriedBalance[]      @relation("CarriedDebtor")
-  carriedCredits     CarriedBalance[]      @relation("CarriedCreditor")
-  alerts             Alert[]
+  groupsCreated    Group[]          @relation("GroupCreator")
+  groupMemberships GroupMember[]
+  hostedSessions   Session[]        @relation("SessionHost")
+  sessionPlayers   SessionPlayer[]
+  carriedDebts     CarriedBalance[] @relation("CarriedDebtor")
+  carriedCredits   CarriedBalance[] @relation("CarriedCreditor")
+  alerts           Alert[]
 }
 
 model Group {
@@ -73,16 +38,17 @@ model Group {
   createdAt   DateTime @default(now())
 
   // Relations
-  createdBy      User             @relation("GroupCreator", fields: [createdById], references: [id])
-  members        GroupMember[]
-  sessions       Session[]
+  createdBy       User             @relation("GroupCreator", fields: [createdById], references: [id])
+  members         GroupMember[]
+  sessions        Session[]
   carriedBalances CarriedBalance[]
 }
 
 model GroupMember {
   userId   String
   groupId  String
-  role     GroupMemberRole
+  // HOST_CAPABLE | MEMBER
+  role     String
   joinedAt DateTime @default(now())
 
   // Relations
@@ -93,15 +59,17 @@ model GroupMember {
 }
 
 model Session {
-  id                String        @id @default(cuid())
+  id                String    @id @default(cuid())
   groupId           String
   hostId            String
-  status            SessionStatus @default(DRAFT)
+  // DRAFT | ACTIVE | ENDED | SETTLED
+  status            String    @default("DRAFT")
   defaultBuyInCents Int
-  roundingMode      RoundingMode  @default(BOUNCE)
+  // BOUNCE | CARRY_FORWARD
+  roundingMode      String    @default("BOUNCE")
   startedAt         DateTime?
   endedAt           DateTime?
-  createdAt         DateTime      @default(now())
+  createdAt         DateTime  @default(now())
 
   // Relations
   group                  Group                   @relation(fields: [groupId], references: [id])
@@ -111,20 +79,20 @@ model Session {
 }
 
 model SessionPlayer {
-  id            String   @id @default(cuid())
-  sessionId     String
-  userId        String?
-  guestName     String?
-  leftEarly     Boolean  @default(false)
-  cashOutCents  Int?
-  createdAt     DateTime @default(now())
+  id           String   @id @default(cuid())
+  sessionId    String
+  userId       String?
+  guestName    String?
+  leftEarly    Boolean  @default(false)
+  cashOutCents Int?
+  createdAt    DateTime @default(now())
 
   // Relations
-  session                 Session                 @relation(fields: [sessionId], references: [id])
-  user                    User?                   @relation(fields: [userId], references: [id])
-  buyIns                  BuyIn[]
-  transactionsAsPayer     SettlementTransaction[] @relation("TransactionFromPlayer")
-  transactionsAsPayee     SettlementTransaction[] @relation("TransactionToPlayer")
+  session             Session               @relation(fields: [sessionId], references: [id])
+  user                User?                 @relation(fields: [userId], references: [id])
+  buyIns              BuyIn[]
+  transactionsAsPayer SettlementTransaction[] @relation("TransactionFromPlayer")
+  transactionsAsPayee SettlementTransaction[] @relation("TransactionToPlayer")
 }
 
 model BuyIn {
@@ -138,17 +106,18 @@ model BuyIn {
 }
 
 model SettlementTransaction {
-  id             String          @id @default(cuid())
+  id             String    @id @default(cuid())
   sessionId      String
   fromPlayerId   String
   toPlayerId     String
   amountCents    Int
-  kind           TransactionKind
+  // STANDARD | BOUNCE_QUALIFIER | BOUNCE_RETURN
+  kind           String
   bounceGroupId  String?
-  payerConfirmed Boolean         @default(false)
-  payeeConfirmed Boolean         @default(false)
+  payerConfirmed Boolean   @default(false)
+  payeeConfirmed Boolean   @default(false)
   confirmedAt    DateTime?
-  createdAt      DateTime        @default(now())
+  createdAt      DateTime  @default(now())
 
   // Relations
   session    Session       @relation(fields: [sessionId], references: [id])
@@ -173,7 +142,8 @@ model CarriedBalance {
 model Alert {
   id        String    @id @default(cuid())
   userId    String
-  type      AlertType
+  // SESSION_ENDED | SETTLEMENT_READY | PAYMENT_CONFIRMED | GROUP_INVITE | PAYMENT_REMINDER
+  type      String
   title     String
   body      String
   link      String?

@@ -1,11 +1,4 @@
-import {
-  PrismaClient,
-  GroupMemberRole,
-  SessionStatus,
-  RoundingMode,
-  TransactionKind,
-  AlertType,
-} from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -80,12 +73,12 @@ async function main() {
   console.log(`Upserted group: ${group.name}`);
 
   // ── 3. Group Members ──────────────────────────────────────────────────────
-  const memberDefs: Array<{ userId: string; role: GroupMemberRole }> = [
-    { userId: alice.id, role: GroupMemberRole.HOST_CAPABLE },
-    { userId: bob.id,   role: GroupMemberRole.HOST_CAPABLE },
-    { userId: carol.id, role: GroupMemberRole.MEMBER },
-    { userId: david.id, role: GroupMemberRole.MEMBER },
-    { userId: eva.id,   role: GroupMemberRole.MEMBER },
+  const memberDefs: Array<{ userId: string; role: string }> = [
+    { userId: alice.id, role: "HOST_CAPABLE" },
+    { userId: bob.id,   role: "HOST_CAPABLE" },
+    { userId: carol.id, role: "MEMBER" },
+    { userId: david.id, role: "MEMBER" },
+    { userId: eva.id,   role: "MEMBER" },
   ];
 
   for (const m of memberDefs) {
@@ -135,7 +128,7 @@ async function main() {
             fromPlayerId: debtor.spId,
             toPlayerId: creditor.spId,
             amountCents: amount,
-            kind: TransactionKind.STANDARD,
+            kind: "STANDARD",
             payerConfirmed: true,
             payeeConfirmed: true,
             confirmedAt,
@@ -151,7 +144,7 @@ async function main() {
             fromPlayerId: creditor.spId,
             toPlayerId: debtor.spId,
             amountCents: 100,
-            kind: TransactionKind.BOUNCE_QUALIFIER,
+            kind: "BOUNCE_QUALIFIER",
             bounceGroupId,
             payerConfirmed: true,
             payeeConfirmed: true,
@@ -165,7 +158,7 @@ async function main() {
             fromPlayerId: debtor.spId,
             toPlayerId: creditor.spId,
             amountCents: amount + 100,
-            kind: TransactionKind.BOUNCE_RETURN,
+            kind: "BOUNCE_RETURN",
             bounceGroupId,
             payerConfirmed: true,
             payeeConfirmed: true,
@@ -208,9 +201,9 @@ async function main() {
       data: {
         groupId: group.id,
         hostId: params.hostId,
-        status: SessionStatus.SETTLED,
+        status: "SETTLED",
         defaultBuyInCents: params.defaultBuyInCents,
-        roundingMode: RoundingMode.BOUNCE,
+        roundingMode: "BOUNCE",
         startedAt: params.startedAt,
         endedAt: params.endedAt,
       },
@@ -361,21 +354,21 @@ async function main() {
     data: [
       {
         userId: alice.id,
-        type: AlertType.SESSION_ENDED,
+        type: "SESSION_ENDED",
         title: "Session ended — net: +$35.00",
         body: "Tuesday Night Poker (Jan 7) has ended. You are owed $35.00. [seed]",
         link: "/sessions",
       },
       {
         userId: bob.id,
-        type: AlertType.PAYMENT_REMINDER,
+        type: "PAYMENT_REMINDER",
         title: "Payment reminder: $35.00 to Alice",
         body: "Alice is waiting on your Zelle payment of $35.00 from the Jan 7 session. [seed]",
         link: "/sessions",
       },
       {
         userId: eva.id,
-        type: AlertType.SETTLEMENT_READY,
+        type: "SETTLEMENT_READY",
         title: "Settlement ready for Mar 4 session",
         body: "Payments have been calculated for Tuesday Night Poker (Mar 4). You owe $4.00. [seed]",
         link: "/sessions",
