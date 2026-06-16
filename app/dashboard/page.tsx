@@ -3,10 +3,45 @@ import Link from 'next/link'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { formatCents } from '@/lib/utils'
+import ClaimSessions from './ClaimSessions'
 
 export default async function DashboardPage() {
   const session = await getSession()
   if (!session) redirect('/login')
+
+  const groupIds = (await prisma.groupMember.findMany({
+    where: { userId: session.user.id },
+    select: { groupId: true },
+  })).map((m) => m.groupId)
+
+  const unclaimedGuests = groupIds.length > 0
+    ? await prisma.sessionPlayer.findMany({
+        where: {
+          userId: null,
+          session: { groupId: { in: groupIds }, status: { in: ['ENDED', 'SETTLED'] } },
+        },
+        include: {
+          buyIns: true,
+          session: { select: { id: true, status: true, endedAt: true, group: { select: { id: true, name: true } } } },
+        },
+        orderBy: { session: { endedAt: 'desc' } },
+      })
+    : []
+
+  const claimSlots = unclaimedGuests.map((sp) => {
+    const buyIn = sp.buyIns.reduce((s, b) => s + b.amountCents, 0)
+    return {
+      sessionPlayerId: sp.id,
+      sessionId:       sp.session.id,
+      sessionStatus:   sp.session.status,
+      endedAt:         sp.session.endedAt?.toISOString() ?? null,
+      groupId:         sp.session.group.id,
+      groupName:       sp.session.group.name,
+      guestName:       sp.guestName,
+      netCents:        (sp.cashOutCents ?? 0) - buyIn,
+      buyInCents:      buyIn,
+    }
+  })
 
   const [memberships, recentSessions] = await Promise.all([
     prisma.groupMember.findMany({
@@ -87,6 +122,9 @@ export default async function DashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Claim guest sessions */}
+        <ClaimSessions initial={claimSlots} />
 
         {/* Groups */}
         <div className="flex items-center justify-between mb-3">
