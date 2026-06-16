@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { formatCents } from '@/lib/utils'
 import { zelleDeepLink, zelleInstructions } from '@/lib/zelle'
+import UpgradePrompt from '@/components/UpgradePrompt'
 
 type BuyIn    = { id: string; amountCents: number }
 type PUser    = { id: string; displayName: string; zelleHandle: string | null }
@@ -352,8 +353,8 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
-export default function SessionView({ session: init, groupMembers, isHost, currentUserId }: {
-  session: Session; groupMembers: GM[]; isHost: boolean; currentUserId: string
+export default function SessionView({ session: init, groupMembers, isHost, currentUserId, isGuest }: {
+  session: Session; groupMembers: GM[]; isHost: boolean; currentUserId: string; isGuest: boolean
 }) {
   const [session, setSes]           = useState(init)
   const [showAdd, setShowAdd]       = useState(false)
@@ -627,6 +628,11 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
           </div>
         )}
       </div>
+
+      {/* Upgrade prompt — shown to guests once the session is fully settled */}
+      {isGuest && session.status === 'SETTLED' && (
+        <UpgradePrompt sessionId={session.id} />
+      )}
 
       {showAdd && (
         <AddPlayerModal sessionId={session.id} existing={existingIds} groupMembers={groupMembers}

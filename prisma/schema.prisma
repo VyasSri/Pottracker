@@ -20,6 +20,7 @@ model User {
   avatarUrl       String?
   zelleHandle     String?
   dashboardPublic Boolean  @default(false)
+  isGuest         Boolean  @default(false)
   createdAt       DateTime @default(now())
 
   // Relations

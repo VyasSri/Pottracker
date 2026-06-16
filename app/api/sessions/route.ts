@@ -13,6 +13,7 @@ const CreateSessionSchema = z.object({
 export async function POST(req: NextRequest) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (session.user.isGuest) return NextResponse.json({ error: 'Guests cannot create sessions.' }, { status: 403 })
 
   const body = await req.json()
   const parsed = CreateSessionSchema.safeParse(body)

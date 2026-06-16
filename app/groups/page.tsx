@@ -8,6 +8,7 @@ import JoinGroupForm from './JoinGroupForm'
 export default async function GroupsPage() {
   const session = await getSession()
   if (!session) redirect('/login')
+  const isGuest = session.user.isGuest ?? false
 
   const memberships = await prisma.groupMember.findMany({
     where: { userId: session.user.id },
@@ -27,7 +28,7 @@ export default async function GroupsPage() {
             <h1 className="font-display text-3xl font-bold text-felt-50">Groups</h1>
             <p className="text-felt-400 mt-1 text-sm">Your poker groups</p>
           </div>
-          <CreateGroupModal />
+          {!isGuest && <CreateGroupModal />}
         </div>
 
         {memberships.length === 0 ? (

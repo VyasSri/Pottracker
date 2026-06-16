@@ -11,6 +11,7 @@ export default async function NewSessionPage({
 }) {
   const session = await getSession()
   if (!session) redirect('/login')
+  if (session.user.isGuest) redirect('/groups')
 
   const groupId = searchParams.groupId
   if (!groupId) notFound()

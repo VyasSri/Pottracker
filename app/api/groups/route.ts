@@ -40,6 +40,7 @@ const createGroupSchema = z.object({
 export async function POST(request: NextRequest) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (session.user.isGuest) return NextResponse.json({ error: 'Guests cannot create groups.' }, { status: 403 })
 
   let body: unknown
   try {

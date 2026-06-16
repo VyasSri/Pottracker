@@ -58,8 +58,10 @@ export default async function DashboardPage() {
     }),
   ])
 
+  const isGuest = session.user.isGuest ?? false
   const settledPlays = recentSessions.filter((sp) => sp.session.status === 'SETTLED')
-  const allTimePlays = await prisma.sessionPlayer.findMany({
+
+  const allTimePlays = isGuest ? [] : await prisma.sessionPlayer.findMany({
     where: { userId: session.user.id, session: { status: 'SETTLED' } },
     include: { buyIns: true },
   })
@@ -89,8 +91,21 @@ export default async function DashboardPage() {
           </div>
         )}
 
+        {/* Guest locked stats banner */}
+        {isGuest && (
+          <div className="bg-felt-800 border border-felt-600 rounded-xl px-5 py-4 mb-8 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-felt-200 text-sm font-semibold">All-time stats are locked</p>
+              <p className="text-felt-500 text-xs mt-0.5">Create a full account to track your net P&amp;L, ROI, and session history.</p>
+            </div>
+            <Link href="/signup" className="flex-shrink-0 text-xs font-bold bg-gold-400 hover:bg-gold-300 text-felt-900 rounded-lg px-3 py-2 transition-all">
+              Upgrade
+            </Link>
+          </div>
+        )}
+
         {/* Stat cards — each has its own color identity */}
-        {allTimePlays.length > 0 && (
+        {!isGuest && allTimePlays.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
             {/* Net P&L — green/red */}
             <div className={`rounded-xl p-5 border relative overflow-hidden ${

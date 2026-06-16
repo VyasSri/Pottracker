@@ -10,6 +10,7 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
   if (!session) redirect('/login')
 
   const { id } = params
+  const isGuest = session.user.isGuest ?? false
 
   const membership = await prisma.groupMember.findUnique({
     where: { userId_groupId: { userId: session.user.id, groupId: id } },
@@ -24,7 +25,7 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
     prisma.groupMember.findMany({
       where: { groupId: id },
       include: {
-        user: { select: { id: true, displayName: true, avatarUrl: true, zelleHandle: true } },
+        user: { select: { id: true, displayName: true, avatarUrl: true, zelleHandle: true, isGuest: true } },
       },
       orderBy: { joinedAt: 'asc' },
     }),
@@ -54,8 +55,8 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
 
   const leaderboards = {
     'all-time': computeLeaderboard(settledSessions, 'all-time'),
-    year: computeLeaderboard(settledSessions, 'year'),
-    month: computeLeaderboard(settledSessions, 'month'),
+    year:       computeLeaderboard(settledSessions, 'year'),
+    month:      computeLeaderboard(settledSessions, 'month'),
   }
 
   return (
@@ -75,12 +76,14 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
               {sessions.length} session{sessions.length !== 1 ? 's' : ''}
             </p>
           </div>
-          <Link
-            href={`/sessions/new?groupId=${id}`}
-            className="flex-shrink-0 bg-gold-400 hover:bg-gold-300 text-felt-900 font-bold px-4 py-2 rounded-lg text-sm transition-all"
-          >
-            + New Session
-          </Link>
+          {!isGuest && (
+            <Link
+              href={`/sessions/new?groupId=${id}`}
+              className="flex-shrink-0 bg-gold-400 hover:bg-gold-300 text-felt-900 font-bold px-4 py-2 rounded-lg text-sm transition-all"
+            >
+              + New Session
+            </Link>
+          )}
         </div>
 
         <GroupDetail
@@ -90,6 +93,7 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
           leaderboards={leaderboards}
           currentUserRole={membership.role}
           currentUserId={session.user.id}
+          isGuest={isGuest}
         />
       </div>
     </main>

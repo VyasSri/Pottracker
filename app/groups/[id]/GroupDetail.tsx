@@ -10,7 +10,7 @@ type Member = {
   groupId: string
   role: string
   joinedAt: Date | string
-  user: { id: string; displayName: string; avatarUrl: string | null; zelleHandle: string | null }
+  user: { id: string; displayName: string; avatarUrl: string | null; zelleHandle: string | null; isGuest: boolean }
 }
 type SessionSummary = {
   id: string
@@ -38,6 +38,7 @@ interface GroupDetailProps {
   leaderboards: Record<LeaderboardRange, LeaderboardEntry[]>
   currentUserRole: string
   currentUserId: string
+  isGuest: boolean
 }
 
 const STATUS_STYLE: Record<string, string> = {
@@ -72,13 +73,34 @@ export default function GroupDetail({
   sessions,
   leaderboards,
   currentUserId,
+  isGuest,
 }: GroupDetailProps) {
   const [tab, setTab]         = useState<'leaderboard' | 'members' | 'sessions'>('leaderboard')
   const [range, setRange]     = useState<LeaderboardRange>('all-time')
   const [inviteCode, setCode] = useState(group.inviteCode)
   const [copied, setCopied]   = useState(false)
   const [regen, setRegen]     = useState(false)
+  const [memberList, setMemberList]         = useState(members)
+  const [kickConfirm, setKickConfirm]       = useState<string | null>(null)
+  const [kicking, setKicking]               = useState<string | null>(null)
+  const [kickError, setKickError]           = useState('')
   const router = useRouter()
+
+  const isCreator = group.isCreator
+
+  async function kickMember(userId: string) {
+    setKicking(userId)
+    setKickError('')
+    const res = await fetch(`/api/groups/${group.id}/members/${userId}`, { method: 'DELETE' })
+    if (res.ok) {
+      setMemberList((prev) => prev.filter((m) => m.userId !== userId))
+      setKickConfirm(null)
+    } else {
+      const d = await res.json().catch(() => ({}))
+      setKickError((d as { error?: string }).error ?? 'Failed to remove member.')
+    }
+    setKicking(null)
+  }
 
   const leaderboard = leaderboards[range]
 
@@ -246,16 +268,19 @@ export default function GroupDetail({
       {/* Members tab */}
       {tab === 'members' && (
         <div className="bg-felt-800 rounded-2xl border border-felt-600 overflow-hidden shadow-card">
-          {members.map((m, i) => (
+          {kickError && (
+            <p className="text-red-400 text-xs text-center px-5 py-2 border-b border-felt-600">{kickError}</p>
+          )}
+          {memberList.map((m, i) => (
             <div
               key={m.userId}
               className={`flex items-center justify-between px-5 py-4 ${
-                i < members.length - 1 ? 'border-b border-felt-600' : ''
+                i < memberList.length - 1 ? 'border-b border-felt-600' : ''
               }`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <Initials name={m.user.displayName} />
-                <div>
+                <div className="min-w-0">
                   <p className="text-felt-100 text-sm font-medium">
                     {m.user.displayName}
                     {m.userId === currentUserId && (
@@ -265,16 +290,50 @@ export default function GroupDetail({
                   <p className="text-felt-500 text-xs mt-0.5">Joined {formatDate(m.joinedAt)}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {m.user.isGuest && (
+                  <span className="text-xs font-semibold bg-felt-700 text-felt-400 border border-felt-600 rounded-full px-2.5 py-1">
+                    Guest
+                  </span>
+                )}
                 {m.userId === group.createdById && (
                   <span className="text-xs font-semibold bg-gold-400/10 text-gold-400 border border-gold-400/20 rounded-full px-2.5 py-1">
                     Creator
                   </span>
                 )}
-                {m.role === 'HOST_CAPABLE' && m.userId !== group.createdById && (
+                {m.role === 'HOST_CAPABLE' && m.userId !== group.createdById && !m.user.isGuest && (
                   <span className="text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full px-2.5 py-1">
                     Host
                   </span>
+                )}
+
+                {/* Kick controls — only creator sees these, not on themselves */}
+                {isCreator && m.userId !== currentUserId && m.userId !== group.createdById && (
+                  kickConfirm === m.userId ? (
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-felt-400">Remove?</span>
+                      <button
+                        onClick={() => kickMember(m.userId)}
+                        disabled={kicking === m.userId}
+                        className="text-xs bg-red-500/10 hover:bg-red-500/20 border border-red-500/40 text-red-400 rounded-lg px-2.5 py-1 transition-all disabled:opacity-50"
+                      >
+                        {kicking === m.userId ? '…' : 'Yes'}
+                      </button>
+                      <button
+                        onClick={() => { setKickConfirm(null); setKickError('') }}
+                        className="text-xs text-felt-500 hover:text-felt-200 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => { setKickConfirm(m.userId); setKickError('') }}
+                      className="text-xs text-felt-600 hover:text-red-400 border border-felt-700 hover:border-red-500/40 rounded-lg px-2.5 py-1 transition-all"
+                    >
+                      Remove
+                    </button>
+                  )
                 )}
               </div>
             </div>

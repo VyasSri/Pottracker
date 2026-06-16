@@ -12,6 +12,7 @@ declare module 'next-auth' {
       email?: string | null
       image?: string | null
       zelleHandle?: string | null
+      isGuest?: boolean
     }
   }
 }
@@ -20,6 +21,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id: string
     zelleHandle?: string | null
+    isGuest?: boolean
   }
 }
 
@@ -48,6 +50,7 @@ const providers: NextAuthOptions['providers'] = [
         name: user.displayName,
         image: user.avatarUrl ?? null,
         zelleHandle: user.zelleHandle ?? null,
+        isGuest: user.isGuest,
       }
     },
   }),
@@ -72,15 +75,16 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        // user object from authorize carries zelleHandle via the extra field
-        const extendedUser = user as typeof user & { zelleHandle?: string | null }
-        token.zelleHandle = extendedUser.zelleHandle ?? null
+        const u = user as typeof user & { zelleHandle?: string | null; isGuest?: boolean }
+        token.zelleHandle = u.zelleHandle ?? null
+        token.isGuest     = u.isGuest ?? false
       }
       return token
     },
     async session({ session, token }) {
-      session.user.id = token.id
+      session.user.id          = token.id
       session.user.zelleHandle = token.zelleHandle ?? null
+      session.user.isGuest     = token.isGuest ?? false
       return session
     },
   },

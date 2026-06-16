@@ -52,6 +52,7 @@ export default async function SessionPage({ params }: { params: { id: string } }
       groupMembers={groupMembers.map((m) => ({ id: m.userId, displayName: m.user.displayName }))}
       isHost={dbSession.hostId === session.user.id}
       currentUserId={session.user.id}
+      isGuest={session.user.isGuest ?? false}
     />
   )
 }

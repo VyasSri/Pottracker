@@ -1,16 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
+  const router       = useRouter()
+  const searchParams = useSearchParams()
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [error, setError]       = useState<string | null>(null)
+  const [loading, setLoading]   = useState(false)
+  const [notice, setNotice]     = useState<string | null>(null)
+
+  useEffect(() => {
+    const prefill = searchParams.get('email')
+    if (prefill) setEmail(prefill)
+    if (searchParams.get('upgraded')) setNotice('Account upgraded! Sign in with your new email and password.')
+  }, [searchParams])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -31,6 +39,12 @@ export default function LoginPage() {
   return (
     <>
       <h2 className="text-xl font-semibold text-felt-50 mb-6">Sign in to your account</h2>
+
+      {notice && (
+        <div className="mb-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-400">
+          {notice}
+        </div>
+      )}
 
       {error && (
         <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
