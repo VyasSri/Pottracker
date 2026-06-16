@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import AuthSessionProvider from "@/components/SessionProvider";
 import Nav from "@/components/Nav";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Poker Ledger",
+  title: "PotTracker",
   description: "Track buy-ins, cash-outs, and settle debts for your home poker group.",
 };
 
@@ -18,10 +23,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${playfair.variable} ${inter.className} relative`}>
         <AuthSessionProvider>
           <Nav />
-          {children}
+          <div className="relative z-10">{children}</div>
         </AuthSessionProvider>
       </body>
     </html>

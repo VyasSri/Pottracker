@@ -4,15 +4,14 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function JoinGroupForm() {
-  const [code, setCode] = useState('')
+  const [code, setCode]     = useState('')
   const [status, setStatus] = useState<'idle' | 'joining' | 'error'>('idle')
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError]   = useState<string | null>(null)
   const router = useRouter()
 
   async function handleJoin(e: React.FormEvent) {
     e.preventDefault()
-    setStatus('joining')
-    setError(null)
+    setStatus('joining'); setError(null)
 
     const res = await fetch('/api/groups/join', {
       method: 'POST',
@@ -40,16 +39,16 @@ export default function JoinGroupForm() {
           required
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
-          placeholder="Enter 6-character code"
+          placeholder="6-character code"
           maxLength={6}
-          className="flex-1 rounded-lg bg-[#0f1117] border border-gray-700 text-white px-4 py-2.5 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent font-mono uppercase tracking-widest"
+          className="flex-1 rounded-lg bg-felt-900 border border-felt-500 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors font-mono uppercase tracking-[0.2em]"
         />
         <button
           type="submit"
           disabled={status === 'joining' || code.trim().length < 6}
-          className="rounded-lg bg-green-500 hover:bg-green-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 text-sm transition-colors whitespace-nowrap"
+          className="rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-50 disabled:cursor-not-allowed text-felt-900 font-bold px-5 py-2.5 text-sm transition-all whitespace-nowrap"
         >
-          {status === 'joining' ? 'Joining…' : 'Join group'}
+          {status === 'joining' ? 'Joining…' : 'Join'}
         </button>
       </form>
       {error && <p className="text-sm text-red-400">{error}</p>}

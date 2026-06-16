@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 
 type Member = { id: string; displayName: string }
 
+const inputCls =
+  'w-full bg-felt-900 border border-felt-500 rounded-lg px-4 py-2.5 text-felt-50 placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors text-sm'
+
 export default function NewSessionForm({
   groupId,
   members,
@@ -15,14 +18,14 @@ export default function NewSessionForm({
   currentUserId: string
 }) {
   const router = useRouter()
-  const [buyIn, setBuyIn] = useState('20')
-  const [roundingMode, setRoundingMode] = useState<'BOUNCE' | 'CARRY_FORWARD'>('BOUNCE')
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set([currentUserId]))
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [buyIn, setBuyIn]           = useState('20')
+  const [roundingMode, setRounding] = useState<'BOUNCE' | 'CARRY_FORWARD'>('BOUNCE')
+  const [selectedIds, setIds]       = useState<Set<string>>(new Set([currentUserId]))
+  const [loading, setLoading]       = useState(false)
+  const [error, setError]           = useState('')
 
-  function togglePlayer(id: string) {
-    setSelectedIds((prev) => {
+  function toggle(id: string) {
+    setIds((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
       else next.add(id)
@@ -32,23 +35,15 @@ export default function NewSessionForm({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    const buyInCents = Math.round(parseFloat(buyIn) * 100)
-    if (isNaN(buyInCents) || buyInCents <= 0) {
-      setError('Enter a valid buy-in amount')
-      return
-    }
+    const cents = Math.round(parseFloat(buyIn) * 100)
+    if (isNaN(cents) || cents <= 0) { setError('Enter a valid buy-in amount'); return }
     setLoading(true)
     setError('')
 
     const res = await fetch('/api/sessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        groupId,
-        defaultBuyInCents: buyInCents,
-        roundingMode,
-        playerUserIds: Array.from(selectedIds),
-      }),
+      body: JSON.stringify({ groupId, defaultBuyInCents: cents, roundingMode, playerUserIds: Array.from(selectedIds) }),
     })
 
     if (!res.ok) {
@@ -57,25 +52,24 @@ export default function NewSessionForm({
       setLoading(false)
       return
     }
-
     const data = await res.json()
     router.push(`/sessions/${data.session.id}`)
   }
 
   return (
     <form onSubmit={submit} className="space-y-6">
-      {/* Buy-in amount */}
+      {/* Buy-in */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Default buy-in</label>
+        <label className="block text-sm font-medium text-felt-200 mb-2">Default buy-in</label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-felt-400 text-sm">$</span>
           <input
             type="number"
             min="0.01"
             step="0.01"
             value={buyIn}
             onChange={(e) => setBuyIn(e.target.value)}
-            className="w-full bg-[#1a1f2e] border border-gray-700 rounded-lg pl-7 pr-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-green-500 transition-colors"
+            className={`${inputCls} pl-8`}
             placeholder="20.00"
             required
           />
@@ -84,25 +78,23 @@ export default function NewSessionForm({
 
       {/* Rounding mode */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Sub-$1 debt handling
-        </label>
+        <label className="block text-sm font-medium text-felt-200 mb-2">Sub-$1 debt handling</label>
         <div className="grid grid-cols-2 gap-2">
           {(['BOUNCE', 'CARRY_FORWARD'] as const).map((mode) => (
             <button
               key={mode}
               type="button"
-              onClick={() => setRoundingMode(mode)}
-              className={`rounded-lg border py-3 px-3 text-left transition-colors ${
+              onClick={() => setRounding(mode)}
+              className={`rounded-xl border py-3 px-4 text-left transition-all ${
                 roundingMode === mode
-                  ? 'border-green-500 bg-green-500/10 text-green-400'
-                  : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-white'
+                  ? 'border-gold-400/50 bg-gold-400/8 text-gold-400'
+                  : 'border-felt-600 text-felt-400 hover:border-felt-500 hover:text-felt-200'
               }`}
             >
               <span className="block text-sm font-semibold">
                 {mode === 'BOUNCE' ? 'Bounce' : 'Carry Forward'}
               </span>
-              <span className="block text-xs opacity-70 mt-0.5">
+              <span className="block text-xs opacity-60 mt-0.5">
                 {mode === 'BOUNCE' ? 'Two-step qualifying payment' : 'Roll into next session'}
               </span>
             </button>
@@ -110,35 +102,31 @@ export default function NewSessionForm({
         </div>
       </div>
 
-      {/* Starting players */}
+      {/* Players */}
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Starting players
-        </label>
-        <div className="bg-[#1a1f2e] rounded-xl border border-gray-800 overflow-hidden">
+        <label className="block text-sm font-medium text-felt-200 mb-2">Starting players</label>
+        <div className="bg-felt-800 rounded-xl border border-felt-600 overflow-hidden">
           {members.map((m, i) => (
             <label
               key={m.id}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors ${
-                i < members.length - 1 ? 'border-b border-gray-800' : ''
+              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-felt-700/50 transition-colors ${
+                i < members.length - 1 ? 'border-b border-felt-600' : ''
               }`}
             >
               <input
                 type="checkbox"
                 checked={selectedIds.has(m.id)}
-                onChange={() => togglePlayer(m.id)}
-                className="accent-green-500"
+                onChange={() => toggle(m.id)}
+                className="accent-gold-400"
               />
-              <span className="text-white text-sm">
+              <span className="text-felt-100 text-sm">
                 {m.displayName}
-                {m.id === currentUserId && (
-                  <span className="ml-1.5 text-xs text-gray-500">(you)</span>
-                )}
+                {m.id === currentUserId && <span className="ml-1.5 text-xs text-felt-500">(you)</span>}
               </span>
             </label>
           ))}
         </div>
-        <p className="text-xs text-gray-500 mt-1.5">
+        <p className="text-xs text-felt-500 mt-1.5">
           Guests and late arrivals can be added after starting.
         </p>
       </div>
@@ -148,7 +136,7 @@ export default function NewSessionForm({
       <button
         type="submit"
         disabled={loading || selectedIds.size === 0}
-        className="w-full bg-green-500 hover:bg-green-400 disabled:bg-green-500/50 text-white font-semibold py-3 rounded-xl transition-colors"
+        className="w-full bg-gold-400 hover:bg-gold-300 disabled:bg-gold-400/40 text-felt-900 font-bold py-3 rounded-xl transition-all"
       >
         {loading ? 'Creating…' : 'Create Session'}
       </button>

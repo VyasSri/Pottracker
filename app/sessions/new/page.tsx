@@ -1,5 +1,4 @@
-import { redirect } from 'next/navigation'
-import { notFound } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -31,21 +30,19 @@ export default async function NewSessionPage({
   if (!membership || !group) notFound()
 
   return (
-    <main className="min-h-screen bg-[#0f1117] px-6 py-10">
+    <main className="min-h-screen bg-felt-900 px-6 py-10">
       <div className="max-w-lg mx-auto">
-        <div className="flex items-center gap-2 text-gray-500 text-sm mb-6">
-          <Link href="/groups" className="hover:text-gray-300 transition-colors">
-            Groups
-          </Link>
+        <div className="flex items-center gap-2 text-felt-400 text-sm mb-6">
+          <Link href="/groups" className="hover:text-felt-100 transition-colors">Groups</Link>
           <span>/</span>
-          <Link href={`/groups/${groupId}`} className="hover:text-gray-300 transition-colors">
+          <Link href={`/groups/${groupId}`} className="hover:text-felt-100 transition-colors">
             {group.name}
           </Link>
           <span>/</span>
-          <span className="text-gray-300">New Session</span>
+          <span className="text-felt-100">New Session</span>
         </div>
 
-        <h1 className="text-3xl font-bold text-white mb-8">New Session</h1>
+        <h1 className="font-display text-3xl font-bold text-felt-50 mb-8">New Session</h1>
 
         <NewSessionForm
           groupId={groupId}

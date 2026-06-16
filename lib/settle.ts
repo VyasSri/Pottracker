@@ -65,7 +65,7 @@ export function settle(players: Player[], opts: SettleOptions): SettlementPlan {
   const creditors: Entry[] = [];
   const debtors: Entry[] = [];
 
-  for (const [id, net] of netMap.entries()) {
+  for (const [id, net] of Array.from(netMap.entries())) {
     if (net > 0) {
       creditors.push({ id, amount: net });
     } else if (net < 0) {

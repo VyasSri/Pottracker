@@ -11,18 +11,21 @@ interface ProfileFormProps {
   }
 }
 
+const inputCls =
+  'w-full rounded-lg bg-felt-900 border border-felt-500 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors'
+
 export default function ProfileForm({ initialValues }: ProfileFormProps) {
   const [displayName, setDisplayName] = useState(initialValues.displayName)
   const [zelleHandle, setZelleHandle] = useState(initialValues.zelleHandle ?? '')
-  const [avatarUrl, setAvatarUrl] = useState(initialValues.avatarUrl ?? '')
-  const [dashboardPublic, setDashboardPublic] = useState(initialValues.dashboardPublic)
-  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [avatarUrl, setAvatarUrl]     = useState(initialValues.avatarUrl ?? '')
+  const [dashboardPublic, setPublic]  = useState(initialValues.dashboardPublic)
+  const [status, setStatus]           = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [errorMsg, setErrorMsg]       = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setStatus('saving')
-    setErrorMessage(null)
+    setErrorMsg(null)
 
     const res = await fetch('/api/profile', {
       method: 'PATCH',
@@ -37,7 +40,7 @@ export default function ProfileForm({ initialValues }: ProfileFormProps) {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
-      setErrorMessage((data as { error?: string }).error ?? 'Failed to save. Please try again.')
+      setErrorMsg((data as { error?: string }).error ?? 'Failed to save. Please try again.')
       setStatus('error')
       return
     }
@@ -49,7 +52,7 @@ export default function ProfileForm({ initialValues }: ProfileFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="displayName" className="block text-sm font-medium text-gray-300 mb-1.5">
+        <label htmlFor="displayName" className="block text-sm font-medium text-felt-200 mb-1.5">
           Display name
         </label>
         <input
@@ -58,12 +61,12 @@ export default function ProfileForm({ initialValues }: ProfileFormProps) {
           required
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
-          className="w-full rounded-lg bg-[#0f1117] border border-gray-700 text-white px-4 py-2.5 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className={inputCls}
         />
       </div>
 
       <div>
-        <label htmlFor="zelleHandle" className="block text-sm font-medium text-gray-300 mb-1.5">
+        <label htmlFor="zelleHandle" className="block text-sm font-medium text-felt-200 mb-1.5">
           Zelle phone or email
         </label>
         <input
@@ -71,52 +74,51 @@ export default function ProfileForm({ initialValues }: ProfileFormProps) {
           type="text"
           value={zelleHandle}
           onChange={(e) => setZelleHandle(e.target.value)}
-          className="w-full rounded-lg bg-[#0f1117] border border-gray-700 text-white px-4 py-2.5 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className={inputCls}
           placeholder="e.g. +15125550100 or you@example.com"
         />
-        <p className="mt-1 text-xs text-gray-500">
-          Used to pre-fill Zelle payment links for your group members.
+        <p className="mt-1.5 text-xs text-felt-500">
+          Used to pre-fill Zelle payment links for group members.
         </p>
       </div>
 
       <div>
-        <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-300 mb-1.5">
-          Avatar URL <span className="text-gray-500 font-normal">(optional)</span>
+        <label htmlFor="avatarUrl" className="block text-sm font-medium text-felt-200 mb-1.5">
+          Avatar URL <span className="text-felt-500 font-normal">(optional)</span>
         </label>
         <input
           id="avatarUrl"
           type="url"
           value={avatarUrl}
           onChange={(e) => setAvatarUrl(e.target.value)}
-          className="w-full rounded-lg bg-[#0f1117] border border-gray-700 text-white px-4 py-2.5 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          className={inputCls}
           placeholder="https://…"
         />
       </div>
 
-      <div className="flex items-start gap-3">
+      <label className="flex items-start gap-3 cursor-pointer">
         <input
           id="dashboardPublic"
           type="checkbox"
           checked={dashboardPublic}
-          onChange={(e) => setDashboardPublic(e.target.checked)}
-          className="mt-0.5 h-4 w-4 rounded border-gray-700 bg-[#0f1117] accent-green-500 cursor-pointer"
+          onChange={(e) => setPublic(e.target.checked)}
+          className="mt-0.5 h-4 w-4 rounded border-felt-500 bg-felt-900 accent-gold-400 cursor-pointer"
         />
-        <label htmlFor="dashboardPublic" className="text-sm text-gray-300 cursor-pointer">
-          Make my stats dashboard public
-          <span className="block text-xs text-gray-500 mt-0.5">
+        <div>
+          <p className="text-sm text-felt-200">Make my stats dashboard public</p>
+          <p className="text-xs text-felt-500 mt-0.5">
             Anyone with the link can view your personal stats page.
-          </span>
-        </label>
-      </div>
+          </p>
+        </div>
+      </label>
 
-      {status === 'error' && errorMessage && (
+      {status === 'error' && errorMsg && (
         <div className="rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
-          {errorMessage}
+          {errorMsg}
         </div>
       )}
-
       {status === 'saved' && (
-        <div className="rounded-lg bg-green-500/10 border border-green-500/30 px-4 py-3 text-sm text-green-400">
+        <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-400">
           Profile saved successfully.
         </div>
       )}
@@ -124,9 +126,9 @@ export default function ProfileForm({ initialValues }: ProfileFormProps) {
       <button
         type="submit"
         disabled={status === 'saving'}
-        className="w-full rounded-lg bg-green-500 hover:bg-green-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-2.5 text-sm transition-colors"
+        className="w-full rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed text-felt-900 font-bold py-2.5 text-sm transition-all"
       >
-        {status === 'saving' ? 'Saving…' : 'Save profile'}
+        {status === 'saving' ? 'Saving…' : 'Save Profile'}
       </button>
     </form>
   )

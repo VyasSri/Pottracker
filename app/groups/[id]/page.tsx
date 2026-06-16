@@ -24,9 +24,7 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
     prisma.groupMember.findMany({
       where: { groupId: id },
       include: {
-        user: {
-          select: { id: true, displayName: true, avatarUrl: true, zelleHandle: true },
-        },
+        user: { select: { id: true, displayName: true, avatarUrl: true, zelleHandle: true } },
       },
       orderBy: { joinedAt: 'asc' },
     }),
@@ -61,28 +59,25 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
   }
 
   return (
-    <main className="min-h-screen bg-[#0f1117] px-6 py-10">
+    <main className="min-h-screen bg-felt-900 px-6 py-10">
       <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-2 text-gray-500 text-sm mb-6">
-          <Link href="/groups" className="hover:text-gray-300 transition-colors">
-            Groups
-          </Link>
+        <div className="flex items-center gap-2 text-felt-400 text-sm mb-6">
+          <Link href="/groups" className="hover:text-felt-100 transition-colors">Groups</Link>
           <span>/</span>
-          <span className="text-gray-300">{group.name}</span>
+          <span className="text-felt-100">{group.name}</span>
         </div>
 
         <div className="flex items-start justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white">{group.name}</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <h1 className="font-display text-3xl font-bold text-felt-50">{group.name}</h1>
+            <p className="text-felt-400 text-sm mt-1">
               {members.length} member{members.length !== 1 ? 's' : ''} ·{' '}
               {sessions.length} session{sessions.length !== 1 ? 's' : ''}
             </p>
           </div>
           <Link
             href={`/sessions/new?groupId=${id}`}
-            className="flex-shrink-0 bg-green-500 hover:bg-green-400 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors"
+            className="flex-shrink-0 bg-gold-400 hover:bg-gold-300 text-felt-900 font-bold px-4 py-2 rounded-lg text-sm transition-all"
           >
             + New Session
           </Link>

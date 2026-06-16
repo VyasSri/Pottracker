@@ -3,7 +3,8 @@ import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-const CashOutSchema = z.object({
+const RecordResultsSchema = z.object({
+  totalBuyInCents: z.number().int().positive(),
   cashOutCents: z.number().int().min(0),
   leftEarly: z.boolean().default(false),
 })
@@ -27,19 +28,24 @@ export async function PATCH(
     return NextResponse.json({ error: 'Session is not ACTIVE' }, { status: 422 })
 
   const body = await req.json()
-  const parsed = CashOutSchema.safeParse(body)
+  const parsed = RecordResultsSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
 
-  const updated = await prisma.sessionPlayer.update({
-    where: { id: params.playerId },
-    data: {
-      cashOutCents: parsed.data.cashOutCents,
-      leftEarly: parsed.data.leftEarly,
-    },
-    include: {
-      user: { select: { id: true, displayName: true, zelleHandle: true } },
-      buyIns: true,
-    },
+  const { totalBuyInCents, cashOutCents, leftEarly } = parsed.data
+
+  const updated = await prisma.$transaction(async (tx) => {
+    // Replace all BuyIn rows with a single authoritative record
+    await tx.buyIn.deleteMany({ where: { sessionPlayerId: params.playerId } })
+    await tx.buyIn.create({ data: { sessionPlayerId: params.playerId, amountCents: totalBuyInCents } })
+
+    return tx.sessionPlayer.update({
+      where: { id: params.playerId },
+      data: { cashOutCents, leftEarly },
+      include: {
+        user: { select: { id: true, displayName: true, zelleHandle: true } },
+        buyIns: true,
+      },
+    })
   })
 
   return NextResponse.json({ player: updated })

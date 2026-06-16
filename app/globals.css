@@ -3,25 +3,29 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --font-playfair: "Playfair Display", Georgia, serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: #0f0507;
+  color: #fdf5f3;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Soft red-black depth via layered gradients */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 140% 60% at 50% 0%,   #2b0e12 0%, transparent 55%),
+    radial-gradient(ellipse 80%  80% at 0%   100%, #1c090c 0%, transparent 50%),
+    radial-gradient(ellipse 80%  80% at 100% 100%, #1c090c 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
