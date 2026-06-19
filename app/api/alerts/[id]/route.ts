@@ -22,3 +22,19 @@ export async function PATCH(
 
   return NextResponse.json({ ok: true })
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getSession()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const alert = await prisma.alert.findUnique({ where: { id: params.id } })
+  if (!alert || alert.userId !== session.user.id)
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  await prisma.alert.delete({ where: { id: params.id } })
+
+  return NextResponse.json({ ok: true })
+}
