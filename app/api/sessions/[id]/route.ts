@@ -52,7 +52,10 @@ export async function GET(
         orderBy: { createdAt: 'asc' },
       },
       settlementTransactions: {
-        include: {
+        select: {
+          id: true, fromPlayerId: true, toPlayerId: true, amountCents: true,
+          kind: true, bounceGroupId: true, payerConfirmed: true, payeeConfirmed: true,
+          confirmedAt: true, createdAt: true,
           fromPlayer: {
             include: { user: { select: { id: true, displayName: true, zelleHandle: true } } },
           },

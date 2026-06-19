@@ -17,6 +17,7 @@ type TxPlayer = { id: string; userId: string | null; guestName: string | null; u
 type STx      = {
   id: string; fromPlayerId: string; toPlayerId: string; amountCents: number
   kind: string; bounceGroupId: string | null; payerConfirmed: boolean; payeeConfirmed: boolean
+  confirmedAt: Date | string | null; createdAt: Date | string
   fromPlayer: TxPlayer; toPlayer: TxPlayer
 }
 type Session  = {
@@ -32,6 +33,9 @@ type GM = { id: string; displayName: string }
 function pName(p: Pick<Player, 'user' | 'guestName'>) { return p.user?.displayName ?? p.guestName ?? 'Unknown' }
 function txName(p: TxPlayer) { return p.user?.displayName ?? p.guestName ?? 'Unknown' }
 function buyTotal(p: Player)  { return p.buyIns.reduce((s, b) => s + b.amountCents, 0) }
+function formatTs(d: Date | string) {
+  return new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
+}
 
 const STATUS_BADGE: Record<string, string> = {
   DRAFT:   'bg-felt-600/60 text-felt-300 border-felt-500',
@@ -271,7 +275,7 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
               )}
 
               {/* Confirmation status pills */}
-              <div className="flex flex-wrap items-center gap-2 mt-1 mb-3">
+              <div className="flex flex-wrap items-center gap-2 mt-1 mb-2">
                 <span className={`text-xs rounded-full px-2.5 py-0.5 border ${
                   tx.payerConfirmed
                     ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
@@ -286,6 +290,14 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
                 }`}>
                   {to} received {tx.payeeConfirmed ? '✓' : '…'}
                 </span>
+              </div>
+
+              {/* Timestamps */}
+              <div className="space-y-0.5 mb-3">
+                <p className="text-felt-600 text-xs">Created {formatTs(tx.createdAt)}</p>
+                {tx.confirmedAt && (
+                  <p className="text-emerald-700 text-xs">Fully confirmed {formatTs(tx.confirmedAt)}</p>
+                )}
               </div>
 
               {/* Action buttons */}
