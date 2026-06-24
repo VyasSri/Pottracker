@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: { id: string } }
@@ -16,18 +18,16 @@ export async function DELETE(
   if (dbSession.status === 'SETTLED')
     return NextResponse.json({ error: 'Cannot delete a settled session' }, { status: 422 })
 
-  await prisma.$transaction(async (tx) => {
-    const playerIds = (
-      await tx.sessionPlayer.findMany({ where: { sessionId: params.id }, select: { id: true } })
-    ).map((p) => p.id)
+  const playerIds = (
+    await prisma.sessionPlayer.findMany({ where: { sessionId: params.id }, select: { id: true } })
+  ).map((p) => p.id)
 
-    await tx.settlementTransaction.deleteMany({ where: { sessionId: params.id } })
-    if (playerIds.length > 0) {
-      await tx.buyIn.deleteMany({ where: { sessionPlayerId: { in: playerIds } } })
-      await tx.sessionPlayer.deleteMany({ where: { id: { in: playerIds } } })
-    }
-    await tx.session.delete({ where: { id: params.id } })
-  })
+  await prisma.settlementTransaction.deleteMany({ where: { sessionId: params.id } })
+  if (playerIds.length > 0) {
+    await prisma.buyIn.deleteMany({ where: { sessionPlayerId: { in: playerIds } } })
+    await prisma.sessionPlayer.deleteMany({ where: { id: { in: playerIds } } })
+  }
+  await prisma.session.delete({ where: { id: params.id } })
 
   return NextResponse.json({ ok: true })
 }

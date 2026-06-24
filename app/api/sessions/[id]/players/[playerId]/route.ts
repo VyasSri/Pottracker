@@ -33,19 +33,17 @@ export async function PATCH(
 
   const { totalBuyInCents, cashOutCents, leftEarly } = parsed.data
 
-  const updated = await prisma.$transaction(async (tx) => {
-    // Replace all BuyIn rows with a single authoritative record
-    await tx.buyIn.deleteMany({ where: { sessionPlayerId: params.playerId } })
-    await tx.buyIn.create({ data: { sessionPlayerId: params.playerId, amountCents: totalBuyInCents } })
+  // Sequential writes — interactive transactions are not supported with PgBouncer transaction mode
+  await prisma.buyIn.deleteMany({ where: { sessionPlayerId: params.playerId } })
+  await prisma.buyIn.create({ data: { sessionPlayerId: params.playerId, amountCents: totalBuyInCents } })
 
-    return tx.sessionPlayer.update({
-      where: { id: params.playerId },
-      data: { cashOutCents, leftEarly },
-      include: {
-        user: { select: { id: true, displayName: true, zelleHandle: true } },
-        buyIns: true,
-      },
-    })
+  const updated = await prisma.sessionPlayer.update({
+    where: { id: params.playerId },
+    data: { cashOutCents, leftEarly },
+    include: {
+      user: { select: { id: true, displayName: true, zelleHandle: true } },
+      buyIns: true,
+    },
   })
 
   return NextResponse.json({ player: updated })

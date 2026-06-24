@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getSession } from '@/lib/auth'
-import { groq } from '@/lib/ai/groq'
+import { getGroq } from '@/lib/ai/groq'
+
+export const dynamic = 'force-dynamic'
 import { toolDefinitions, executeTool } from '@/lib/ai/tools'
 import type Groq from 'groq-sdk'
 
@@ -32,7 +34,7 @@ export async function POST(req: Request) {
 
   // Agentic tool-use loop — max 5 iterations to prevent runaway calls
   for (let i = 0; i < 5; i++) {
-    const response = await groq.chat.completions.create({
+    const response = await getGroq().chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages,
       tools: toolDefinitions,
