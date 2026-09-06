@@ -19,9 +19,9 @@ export default async function ProfilePage() {
   const publicUrl = `${protocol}://${host}/u/${user.id}`
 
   return (
-    <main className="min-h-screen bg-felt-900 px-6 py-12">
+    <main className="min-h-[100dvh] px-5 py-12">
       <div className="max-w-lg mx-auto">
-        <h1 className="font-display text-2xl font-bold text-felt-50 mb-1">Your Profile</h1>
+        <h1 className="font-semibold tracking-tight text-2xl font-bold text-felt-50 mb-1">Your Profile</h1>
         <p className="text-felt-400 text-sm mb-8">
           Update your display name, Zelle handle, and privacy settings.
         </p>

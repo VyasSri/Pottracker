@@ -28,7 +28,7 @@ export default function AlertsBadge() {
     >
       Alerts
       {unread > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-gold-400 text-felt-900 text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none">
+        <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-gold-400 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none">
           {unread > 9 ? '9+' : unread}
         </span>
       )}

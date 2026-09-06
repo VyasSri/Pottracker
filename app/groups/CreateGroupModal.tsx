@@ -39,14 +39,14 @@ export default function CreateGroupModal() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg bg-gold-400 hover:bg-gold-300 text-felt-900 font-bold px-4 py-2 text-sm transition-all"
+        className="rounded-lg bg-gold-400 hover:bg-gold-300 text-white font-bold px-4 py-2 text-sm transition-all"
       >
         Create group
       </button>
 
       {open && (
         <div
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-felt-50/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={(e) => e.target === e.currentTarget && close()}
         >
           <div className="bg-felt-800 rounded-2xl shadow-card p-8 w-full max-w-md border border-felt-600">
@@ -67,12 +67,12 @@ export default function CreateGroupModal() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Tuesday Night Poker"
-                  className="w-full rounded-lg bg-felt-900 border border-felt-500 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors"
+                  className="w-full rounded-lg bg-felt-800 border border-felt-600 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors"
                 />
               </div>
 
               {error && (
-                <div className="rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
+                <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
                   {error}
                 </div>
               )}
@@ -81,14 +81,14 @@ export default function CreateGroupModal() {
                 <button
                   type="button"
                   onClick={close}
-                  className="flex-1 rounded-lg border border-felt-500 hover:border-felt-400 text-felt-300 hover:text-felt-100 py-2.5 text-sm transition-all"
+                  className="flex-1 rounded-lg border border-felt-600 hover:border-felt-500 text-felt-300 hover:text-felt-100 py-2.5 text-sm transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={status === 'creating'}
-                  className="flex-1 rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed text-felt-900 font-bold py-2.5 text-sm transition-all"
+                  className="flex-1 rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-2.5 text-sm transition-all"
                 >
                   {status === 'creating' ? 'Creating…' : 'Create group'}
                 </button>

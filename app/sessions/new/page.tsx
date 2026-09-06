@@ -31,7 +31,7 @@ export default async function NewSessionPage({
   if (!membership || !group) notFound()
 
   return (
-    <main className="min-h-screen bg-felt-900 px-6 py-10">
+    <main className="min-h-[100dvh] px-5 py-10">
       <div className="max-w-lg mx-auto">
         <div className="flex items-center gap-2 text-felt-400 text-sm mb-6">
           <Link href="/groups" className="hover:text-felt-100 transition-colors">Groups</Link>
@@ -43,7 +43,7 @@ export default async function NewSessionPage({
           <span className="text-felt-100">New Session</span>
         </div>
 
-        <h1 className="font-display text-3xl font-bold text-felt-50 mb-8">New Session</h1>
+        <h1 className="font-semibold tracking-tight text-3xl font-bold text-felt-50 mb-8">New Session</h1>
 
         <NewSessionForm
           groupId={groupId}

@@ -85,17 +85,14 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
     .map(([groupName, netCents]) => ({ groupName, netCents }))
 
   return (
-    <main className="min-h-screen bg-felt-900 px-6 py-10">
+    <main className="min-h-[100dvh] px-5 py-10">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-1">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-base font-bold text-felt-900"
-              style={{ background: 'linear-gradient(135deg, #e05050, #c53030)' }}
-            >
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-base font-bold text-white bg-gold-400">
               {user.displayName[0].toUpperCase()}
             </div>
-            <h1 className="font-display text-3xl font-bold text-felt-50">{user.displayName}</h1>
+            <h1 className="font-semibold tracking-tight text-3xl font-bold text-felt-50">{user.displayName}</h1>
           </div>
           <p className="text-felt-500 text-sm ml-13">Public stats dashboard</p>
         </div>

@@ -26,7 +26,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false)
 
   const inputCls =
-    'w-full rounded-lg bg-felt-900 border border-felt-500 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors'
+    'w-full rounded-lg bg-felt-800 border border-felt-600 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -98,7 +98,7 @@ export default function SignupPage() {
   return (
     <>
       {/* Mode toggle */}
-      <div className="flex bg-felt-900 rounded-lg p-1 mb-6">
+      <div className="flex bg-felt-800 rounded-lg p-1 mb-6">
         {(['full', 'guest'] as Mode[]).map((m) => (
           <button
             key={m}
@@ -106,7 +106,7 @@ export default function SignupPage() {
             onClick={() => { setMode(m); setError(null) }}
             className={`flex-1 rounded-md py-2 text-sm font-semibold transition-all ${
               mode === m
-                ? 'bg-gold-400 text-felt-900'
+                ? 'bg-gold-400 text-white'
                 : 'text-felt-400 hover:text-felt-100'
             }`}
           >
@@ -116,7 +116,7 @@ export default function SignupPage() {
       </div>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
+        <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -174,7 +174,7 @@ export default function SignupPage() {
               </p>
             </div>
 
-            <div className="bg-felt-900/60 border border-felt-700 rounded-lg px-4 py-3 text-xs text-felt-400">
+            <div className="bg-gold-50 border border-gold-200 rounded-lg px-4 py-3 text-xs text-gold-700">
               Guest accounts are tied to this browser session. To log back in later, add an email from your profile after joining.
             </div>
           </>
@@ -248,7 +248,7 @@ export default function SignupPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed text-felt-900 font-bold py-2.5 text-sm transition-all"
+          className="w-full rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-2.5 text-sm transition-all"
         >
           {loading
             ? 'Setting up…'

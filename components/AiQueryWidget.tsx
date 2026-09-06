@@ -58,13 +58,13 @@ export default function AiQueryWidget() {
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
       {/* Chat panel */}
       {open && (
-        <div className="w-80 sm:w-96 bg-felt-900 border border-felt-600 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        <div className="w-80 sm:w-96 bg-felt-800 border border-felt-600 rounded-2xl shadow-card flex flex-col overflow-hidden"
           style={{ maxHeight: '70vh' }}>
 
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-felt-700 bg-felt-800">
             <div className="flex items-center gap-2">
-              <span className="text-gold-400 text-lg">♠</span>
+              <span className="grid place-items-center w-5 h-5 rounded-md bg-gold-400"><span className="w-1.5 h-1.5 rounded-full bg-white/90" /></span>
               <div>
                 <p className="text-felt-100 text-sm font-semibold leading-none">Stats Assistant</p>
               </div>
@@ -84,7 +84,7 @@ export default function AiQueryWidget() {
                 <p className="text-felt-400 text-xs text-center py-2">Ask anything about your poker stats</p>
                 {SUGGESTIONS.map((s) => (
                   <button key={s} onClick={() => ask(s)}
-                    className="w-full text-left text-xs bg-felt-800 hover:bg-felt-700 border border-felt-600 hover:border-gold-500/50 text-felt-300 hover:text-gold-400 rounded-lg px-3 py-2 transition-all">
+                    className="w-full text-left text-xs bg-felt-800 hover:bg-felt-700 border border-felt-600 hover:border-gold-400/50 text-felt-300 hover:text-gold-400 rounded-lg px-3 py-2 transition-all">
                     {s}
                   </button>
                 ))}
@@ -94,7 +94,7 @@ export default function AiQueryWidget() {
                 <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-xl px-3 py-2 text-sm leading-relaxed ${
                     m.role === 'user'
-                      ? 'bg-gold-400 text-felt-900 font-medium'
+                      ? 'bg-gold-400 text-white font-medium'
                       : 'bg-felt-800 border border-felt-600 text-felt-200'
                   }`}>
                     {m.text}
@@ -127,10 +127,10 @@ export default function AiQueryWidget() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about your stats..."
                 disabled={loading}
-                className="flex-1 bg-felt-700 border border-felt-600 rounded-lg px-3 py-2 text-sm text-felt-100 placeholder:text-felt-500 focus:outline-none focus:border-gold-500/60 disabled:opacity-50 transition-colors"
+                className="flex-1 bg-felt-800 border border-felt-600 rounded-lg px-3 py-2 text-sm text-felt-100 placeholder:text-felt-500 focus:outline-none focus:border-gold-400/60 disabled:opacity-50 transition-colors"
               />
               <button type="submit" disabled={loading || !input.trim()}
-                className="bg-gold-400 hover:bg-gold-300 disabled:opacity-40 text-felt-900 rounded-lg px-3 py-2 transition-all">
+                className="bg-gold-400 hover:bg-gold-300 disabled:opacity-40 text-white rounded-lg px-3 py-2 transition-all">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
@@ -142,7 +142,7 @@ export default function AiQueryWidget() {
 
       {/* Floating button */}
       <button onClick={() => setOpen((o) => !o)}
-        className="w-13 h-13 bg-gold-400 hover:bg-gold-300 text-felt-900 rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center"
+        className="w-13 h-13 bg-gold-400 hover:bg-gold-300 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center"
         style={{ width: 52, height: 52 }}
         aria-label="Open AI stats assistant">
         {open ? (

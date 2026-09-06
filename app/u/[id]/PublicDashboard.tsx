@@ -26,9 +26,9 @@ interface Props {
   sessions: SessionRow[]
 }
 
-const RED   = '#e05050'
-const DARK  = '#8a1a1a'
-const GREEN = '#34d399'
+const RED   = '#dc2626'
+const DARK  = '#065f46'
+const GREEN = '#059669'
 
 function CentsTick({ x, y, payload }: { x?: number; y?: number; payload?: { value: number } }) {
   if (!payload) return null
@@ -49,7 +49,7 @@ function CentsTooltip({ active, payload, label }: {
   return (
     <div className="bg-felt-800 border border-felt-600 rounded-lg px-3 py-2 text-xs shadow-card">
       <p className="text-felt-400 mb-1">{label}</p>
-      <p className={`font-bold ${v >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+      <p className={`font-bold tnum ${v >= 0 ? 'text-gold-400' : 'text-red-600'}`}>
         {v >= 0 ? '+' : ''}{formatCents(v)}
       </p>
     </div>
@@ -68,13 +68,13 @@ export default function PublicDashboard({
           {
             label: 'All-time net',
             value: (allTimeNet > 0 ? '+' : '') + formatCents(allTimeNet),
-            color: allTimeNet >= 0 ? 'text-emerald-400' : 'text-red-400',
-            bg: allTimeNet >= 0 ? 'bg-emerald-950/60 border-emerald-700/40' : 'bg-red-950/60 border-red-700/40',
+            color: allTimeNet >= 0 ? 'text-gold-400' : 'text-red-600',
+            bg: allTimeNet >= 0 ? 'bg-gold-50 border-gold-200' : 'bg-red-50 border-red-200',
           },
           {
             label: 'ROI',
-            value: roi !== null ? `${roi > 0 ? '+' : ''}${roi.toFixed(1)}%` : '—',
-            color: roi !== null && roi >= 0 ? 'text-gold-300' : 'text-red-400',
+            value: roi !== null ? `${roi > 0 ? '+' : ''}${roi.toFixed(1)}%` : '·',
+            color: roi !== null && roi >= 0 ? 'text-gold-400' : 'text-red-600',
             bg: 'bg-felt-800 border-felt-600',
           },
           {
@@ -85,14 +85,14 @@ export default function PublicDashboard({
           },
           {
             label: 'Best streak',
-            value: longestStreak > 0 ? `${longestStreak}W` : '—',
+            value: longestStreak > 0 ? `${longestStreak}W` : '·',
             color: 'text-gold-400',
             bg: 'bg-felt-800 border-felt-600',
           },
         ].map(({ label, value, color, bg }) => (
           <div key={label} className={`rounded-xl border p-4 ${bg}`}>
             <p className="text-xs text-felt-400 uppercase tracking-wider mb-1">{label}</p>
-            <p className={`text-xl font-bold ${color}`}>{value}</p>
+            <p className={`text-xl font-bold tnum ${color}`}>{value}</p>
           </div>
         ))}
       </div>
@@ -105,12 +105,12 @@ export default function PublicDashboard({
             <BarChart data={monthly} margin={{ left: 16, right: 8, top: 4, bottom: 4 }}>
               <XAxis
                 dataKey="month"
-                tick={{ fill: '#8a3a40', fontSize: 11 }}
+                tick={{ fill: '#78716c', fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis tick={<CentsTick />} axisLine={false} tickLine={false} width={72} />
-              <Tooltip content={<CentsTooltip />} cursor={{ fill: 'rgba(224,80,80,0.06)' }} />
+              <Tooltip content={<CentsTooltip />} cursor={{ fill: 'rgba(5,150,105,0.06)' }} />
               <Bar dataKey="netCents" radius={[4, 4, 0, 0]} maxBarSize={40}>
                 {monthly.map((entry, i) => (
                   <Cell key={i} fill={entry.netCents >= 0 ? GREEN : RED} />
@@ -134,7 +134,7 @@ export default function PublicDashboard({
               <XAxis
                 type="number"
                 dataKey="netCents"
-                tick={{ fill: '#8a3a40', fontSize: 11 }}
+                tick={{ fill: '#78716c', fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(v: number) => formatCents(v)}
@@ -142,12 +142,12 @@ export default function PublicDashboard({
               <YAxis
                 type="category"
                 dataKey="groupName"
-                tick={{ fill: '#d4a0a8', fontSize: 12 }}
+                tick={{ fill: '#57534e', fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 width={120}
               />
-              <Tooltip content={<CentsTooltip />} cursor={{ fill: 'rgba(224,80,80,0.06)' }} />
+              <Tooltip content={<CentsTooltip />} cursor={{ fill: 'rgba(5,150,105,0.06)' }} />
               <Bar dataKey="netCents" radius={[0, 4, 4, 0]} maxBarSize={28}>
                 {byGroup.map((entry, i) => (
                   <Cell key={i} fill={entry.netCents >= 0 ? GREEN : RED} />
@@ -178,7 +178,7 @@ export default function PublicDashboard({
                     {' · '}buy-in {formatCents(s.buyInCents)}
                   </p>
                 </div>
-                <span className={`text-sm font-bold ${net > 0 ? 'text-emerald-400' : net < 0 ? 'text-red-400' : 'text-felt-400'}`}>
+                <span className={`text-sm font-bold tnum ${net > 0 ? 'text-gold-400' : net < 0 ? 'text-red-600' : 'text-felt-400'}`}>
                   {net > 0 ? '+' : ''}{formatCents(net)}
                 </span>
               </div>

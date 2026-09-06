@@ -38,13 +38,13 @@ function formatTs(d: Date | string) {
 }
 
 const STATUS_BADGE: Record<string, string> = {
-  DRAFT:   'bg-felt-600/60 text-felt-300 border-felt-500',
-  ACTIVE:  'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-  ENDED:   'bg-amber-500/10 text-amber-400 border-amber-500/30',
-  SETTLED: 'bg-gold-400/10 text-gold-400 border-gold-400/30',
+  DRAFT:   'bg-felt-700 text-felt-300 border-felt-600',
+  ACTIVE:  'bg-gold-50 text-gold-700 border-gold-200',
+  ENDED:   'bg-amber-50 text-amber-800 border-amber-200',
+  SETTLED: 'bg-gold-50 text-gold-700 border-gold-200',
 }
 
-const inputCls = 'w-full bg-felt-950 border border-felt-500 rounded-lg px-4 py-2.5 text-felt-50 placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors text-sm'
+const inputCls = 'w-full bg-felt-800 border border-felt-600 rounded-lg px-4 py-2.5 text-felt-50 placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors text-sm'
 
 // ─── Add Player Modal ────────────────────────────────────────────────────────
 function AddPlayerModal({ sessionId, existing, groupMembers, onClose, onAdded }: {
@@ -70,13 +70,13 @@ function AddPlayerModal({ sessionId, existing, groupMembers, onClose, onAdded }:
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-felt-50/30 backdrop-blur-sm">
       <div className="bg-felt-800 rounded-2xl border border-felt-600 shadow-card w-full max-w-sm p-6">
         <h2 className="text-felt-50 font-semibold text-lg mb-4">Add Player</h2>
         <div className="flex gap-1 mb-4 bg-felt-900 rounded-lg p-1">
           {(['member', 'guest'] as const).map((m) => (
             <button key={m} type="button" onClick={() => setMode(m)}
-              className={`flex-1 rounded-md py-1.5 text-sm font-semibold transition-all ${mode === m ? 'bg-gold-400 text-felt-900' : 'text-felt-400 hover:text-felt-100'}`}>
+              className={`flex-1 rounded-md py-1.5 text-sm font-semibold transition-all ${mode === m ? 'bg-gold-400 text-white' : 'text-felt-400 hover:text-felt-100'}`}>
               {m === 'member' ? 'Group member' : 'Guest'}
             </button>
           ))}
@@ -93,13 +93,13 @@ function AddPlayerModal({ sessionId, existing, groupMembers, onClose, onAdded }:
             <input type="text" placeholder="Guest name" value={guest} onChange={(e) => setGuest(e.target.value)}
               maxLength={50} required className={inputCls} />
           )}
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-600 text-sm">{error}</p>}
           <div className="flex gap-2">
             <button type="button" onClick={onClose}
-              className="flex-1 border border-felt-500 hover:border-felt-400 text-felt-300 rounded-lg py-2.5 text-sm font-medium transition-all">Cancel</button>
+              className="flex-1 border border-felt-600 hover:border-felt-500 text-felt-300 rounded-lg py-2.5 text-sm font-medium transition-all">Cancel</button>
             <button type="submit"
               disabled={loading || (mode === 'member' && (!userId || !available.length)) || (mode === 'guest' && !guest.trim())}
-              className="flex-1 bg-gold-400 hover:bg-gold-300 disabled:opacity-50 text-felt-900 rounded-lg py-2.5 text-sm font-bold transition-all">
+              className="flex-1 bg-gold-400 hover:bg-gold-300 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-bold transition-all">
               {loading ? 'Adding…' : 'Add'}
             </button>
           </div>
@@ -140,7 +140,7 @@ function RecordResultsModal({ player, sessionId, defaultBuyInCents, onClose, onD
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-felt-50/30 backdrop-blur-sm">
       <div className="bg-felt-800 rounded-2xl border border-felt-600 shadow-card w-full max-w-sm p-6">
         <h2 className="text-felt-50 font-semibold text-lg mb-1">Record Results</h2>
         <p className="text-felt-400 text-sm mb-5">{pName(player)}</p>
@@ -164,20 +164,20 @@ function RecordResultsModal({ player, sessionId, defaultBuyInCents, onClose, onD
             </div>
           </div>
           {netCents !== null && (
-            <div className={`rounded-lg px-4 py-2.5 text-sm font-semibold text-center border ${netCents >= 0 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
-              Net: {netCents >= 0 ? '+' : ''}{formatCents(netCents)}
+            <div className={`rounded-lg px-4 py-2.5 text-sm font-semibold text-center border ${netCents >= 0 ? 'bg-gold-50 border-gold-200 text-gold-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+              Net: <span className="tnum">{netCents >= 0 ? '+' : ''}{formatCents(netCents)}</span>
             </div>
           )}
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={leftEarly} onChange={(e) => setLeftEarly(e.target.checked)} className="accent-gold-400" />
             <span className="text-sm text-felt-300">Player is leaving early</span>
           </label>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-600 text-sm">{error}</p>}
           <div className="flex gap-2">
             <button type="button" onClick={onClose}
-              className="flex-1 border border-felt-500 hover:border-felt-400 text-felt-300 rounded-lg py-2.5 text-sm font-medium transition-all">Cancel</button>
+              className="flex-1 border border-felt-600 hover:border-felt-500 text-felt-300 rounded-lg py-2.5 text-sm font-medium transition-all">Cancel</button>
             <button type="submit" disabled={loading}
-              className="flex-1 bg-gold-400 hover:bg-gold-300 disabled:opacity-50 text-felt-900 rounded-lg py-2.5 text-sm font-bold transition-all">
+              className="flex-1 bg-gold-400 hover:bg-gold-300 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-bold transition-all">
               {loading ? 'Saving…' : 'Save'}
             </button>
           </div>
@@ -218,8 +218,8 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-felt-100 font-semibold text-lg">Settlement</h2>
         {sessionStatus === 'SETTLED' && (
-          <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1">
-            All settled ✓
+          <span className="text-xs text-gold-700 font-bold bg-gold-50 border border-gold-200 rounded-full px-3 py-1">
+            All settled
           </span>
         )}
       </div>
@@ -237,20 +237,20 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
           return (
             <div key={tx.id} className={`bg-felt-800 rounded-xl border p-4 shadow-card ${
               fullyConfirmed
-                ? 'border-emerald-500/30 opacity-70'
+                ? 'border-gold-200 opacity-70'
                 : isBounce
-                  ? 'border-amber-500/25'
+                  ? 'border-amber-200'
                   : isGuest
-                    ? 'border-gold-400/20'
+                    ? 'border-gold-200'
                     : 'border-felt-600'
             }`}>
               {isBounce && (
-                <p className="text-xs text-amber-400 font-bold uppercase tracking-wider mb-2">
-                  {tx.kind === 'BOUNCE_QUALIFIER' ? '↓ Step 1 of 2' : '↑ Step 2 of 2'}
+                <p className="text-xs text-amber-700 font-bold uppercase tracking-wider mb-2">
+                  {tx.kind === 'BOUNCE_QUALIFIER' ? 'Step 1 of 2' : 'Step 2 of 2'}
                 </p>
               )}
               {isGuest && !isBounce && (
-                <p className="text-xs text-gold-400 font-semibold mb-2">Host handles in person</p>
+                <p className="text-xs text-gold-600 font-semibold mb-2">Host handles in person</p>
               )}
 
               {/* Transaction summary row */}
@@ -261,15 +261,15 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
                   <span className="font-semibold">{to}</span>
                 </p>
                 <div className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold text-sm">{formatCents(tx.amountCents)}</span>
-                  {fullyConfirmed && <span className="text-emerald-400 text-xs">✓</span>}
+                  <span className="text-gold-400 font-bold text-sm tnum">{formatCents(tx.amountCents)}</span>
+                  {fullyConfirmed && <span className="text-gold-400 text-xs">✓</span>}
                 </div>
               </div>
 
               {isBounce && (
                 <p className="text-felt-500 text-xs mb-2">
                   {tx.kind === 'BOUNCE_QUALIFIER'
-                    ? `${from} sends ${to} $1.00 first — this qualifies the return payment.`
+                    ? `${from} sends ${to} $1.00 first · this qualifies the return payment.`
                     : `${from} then sends ${to} ${formatCents(tx.amountCents)}, clearing the debt and returning the $1.00.`}
                 </p>
               )}
@@ -278,14 +278,14 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
               <div className="flex flex-wrap items-center gap-2 mt-1 mb-2">
                 <span className={`text-xs rounded-full px-2.5 py-0.5 border ${
                   tx.payerConfirmed
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                    ? 'bg-gold-50 border-gold-200 text-gold-700'
                     : 'bg-felt-700 border-felt-600 text-felt-500'
                 }`}>
                   {from} sent {tx.payerConfirmed ? '✓' : '…'}
                 </span>
                 <span className={`text-xs rounded-full px-2.5 py-0.5 border ${
                   tx.payeeConfirmed
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                    ? 'bg-gold-50 border-gold-200 text-gold-700'
                     : 'bg-felt-700 border-felt-600 text-felt-500'
                 }`}>
                   {to} received {tx.payeeConfirmed ? '✓' : '…'}
@@ -296,7 +296,7 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
               <div className="space-y-0.5 mb-3">
                 <p className="text-felt-600 text-xs">Created {formatTs(tx.createdAt)}</p>
                 {tx.confirmedAt && (
-                  <p className="text-emerald-700 text-xs">Fully confirmed {formatTs(tx.confirmedAt)}</p>
+                  <p className="text-gold-600 text-xs">Fully confirmed {formatTs(tx.confirmedAt)}</p>
                 )}
               </div>
 
@@ -310,7 +310,7 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
                         href={zelleDeepLink(payeeHandle, tx.amountCents)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full text-center text-sm font-semibold bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded-lg py-2 transition-all"
+                        className="w-full text-center text-sm font-semibold bg-gold-400 hover:bg-gold-300 text-white rounded-lg py-2 transition-all"
                       >
                         Open Zelle →
                       </a>
@@ -321,7 +321,7 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
                   )}
                   {isPayer && !tx.payerConfirmed && !payeeHandle && (
                     <p className="text-felt-500 text-xs text-center bg-felt-700 rounded-lg py-2 px-3">
-                      {to} hasn&apos;t set a Zelle handle — coordinate directly.
+                      {to} hasn&apos;t set a Zelle handle · coordinate directly.
                     </p>
                   )}
 
@@ -330,7 +330,7 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
                     <button
                       onClick={() => confirm(tx.id)}
                       disabled={confirming === tx.id}
-                      className="w-full text-sm font-bold bg-gold-400 hover:bg-gold-300 disabled:opacity-50 text-felt-900 rounded-lg py-2 transition-all"
+                      className="w-full text-sm font-bold bg-gold-400 hover:bg-gold-300 disabled:opacity-50 text-white rounded-lg py-2 transition-all"
                     >
                       {confirming === tx.id ? 'Confirming…' : 'I sent it ✓'}
                     </button>
@@ -339,7 +339,7 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
                     <button
                       onClick={() => confirm(tx.id)}
                       disabled={confirming === tx.id}
-                      className="w-full text-sm font-bold bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-lg py-2 transition-all disabled:opacity-50"
+                      className="w-full text-sm font-bold bg-gold-50 hover:bg-gold-100 border border-gold-200 text-gold-700 rounded-lg py-2 transition-all disabled:opacity-50"
                     >
                       {confirming === tx.id ? 'Confirming…' : 'I received it ✓'}
                     </button>
@@ -350,7 +350,7 @@ function SettlementPanel({ transactions, sessionId, sessionStatus, currentUserId
                   {isPayer && tx.payerConfirmed && !tx.payeeConfirmed && (
                     <p className="text-felt-500 text-xs text-center">Waiting for {to} to confirm receipt…</p>
                   )}
-                  {errors[tx.id] && <p className="text-red-400 text-xs text-center">{errors[tx.id]}</p>}
+                  {errors[tx.id] && <p className="text-red-600 text-xs text-center">{errors[tx.id]}</p>}
                 </div>
               )}
             </div>
@@ -424,7 +424,7 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
   const existingIds  = new Set(players.filter((p) => p.userId).map((p) => p.userId!))
 
   return (
-    <main className="min-h-screen bg-felt-900 px-4 sm:px-6 py-8 sm:py-10">
+    <main className="min-h-[100dvh] px-4 sm:px-5 py-8 sm:py-10">
       <div className="max-w-2xl mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-felt-400 text-sm mb-6 min-w-0">
@@ -456,15 +456,15 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
             <div className="flex-shrink-0">
               {!confirmDelete ? (
                 <button onClick={() => setConfirm(true)}
-                  className="text-xs text-felt-500 hover:text-red-400 border border-felt-600 hover:border-red-500/40 rounded-lg px-3 py-1.5 transition-all">
+                  className="text-xs text-felt-500 hover:text-red-600 border border-felt-600 hover:border-red-200 rounded-lg px-3 py-1.5 transition-all">
                   Delete session
                 </button>
               ) : (
                 <div className="flex flex-col items-end gap-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-red-400">Are you sure?</span>
+                    <span className="text-xs text-red-600">Are you sure?</span>
                     <button onClick={deleteSession} disabled={deleteLoad}
-                      className="text-xs bg-red-500/10 hover:bg-red-500/20 border border-red-500/40 text-red-400 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50">
+                      className="text-xs bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-lg px-3 py-1.5 transition-all disabled:opacity-50">
                       {deleteLoad ? 'Deleting…' : 'Yes, delete'}
                     </button>
                     <button onClick={() => { setConfirm(false); setDeleteErr('') }}
@@ -472,7 +472,7 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
                       Cancel
                     </button>
                   </div>
-                  {deleteError && <p className="text-xs text-red-400">{deleteError}</p>}
+                  {deleteError && <p className="text-xs text-red-600">{deleteError}</p>}
                 </div>
               )}
             </div>
@@ -509,8 +509,8 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
               <div className="pt-2">
                 {players.length < 2 && <p className="text-felt-500 text-sm text-center mb-3">Need at least 2 players to start.</p>}
                 <button onClick={startSession} disabled={startLoad || players.length < 2}
-                  className="w-full bg-gold-400 hover:bg-gold-300 disabled:bg-gold-400/30 text-felt-900 font-bold py-3 rounded-xl transition-all">
-                  {startLoad ? 'Starting…' : '▶ Start Session'}
+                  className="w-full bg-gold-400 hover:bg-gold-300 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all">
+                  {startLoad ? 'Starting…' : 'Start Session'}
                 </button>
               </div>
             )}
@@ -525,11 +525,11 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
               {[
                 { label: 'Buy-ins',    value: formatCents(totalBuyIns),  color: 'text-felt-100' },
                 { label: 'Cashed out', value: formatCents(totalCashOut), color: 'text-felt-100' },
-                { label: 'Remaining',  value: formatCents(uncashed),     color: uncashed === 0 ? 'text-emerald-400' : 'text-felt-100' },
+                { label: 'Remaining',  value: formatCents(uncashed),     color: uncashed === 0 ? 'text-gold-400' : 'text-felt-100' },
               ].map(({ label, value, color }) => (
-                <div key={label} className={`bg-felt-800 rounded-xl border ${uncashed === 0 && label === 'Remaining' ? 'border-emerald-500/30' : 'border-felt-600'} p-4 text-center shadow-card`}>
+                <div key={label} className={`bg-felt-800 rounded-xl border ${uncashed === 0 && label === 'Remaining' ? 'border-gold-200' : 'border-felt-600'} p-4 text-center shadow-card`}>
                   <p className="text-xs text-felt-400 uppercase tracking-wider mb-1">{label}</p>
-                  <p className={`font-bold text-lg ${color}`}>{value}</p>
+                  <p className={`font-bold text-lg tnum ${color}`}>{value}</p>
                 </div>
               ))}
             </div>
@@ -556,12 +556,12 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-felt-100 font-semibold text-sm">{pName(p)}</span>
                           {!p.userId && <span className="text-xs text-felt-500 bg-felt-700 rounded-full px-2 py-0.5">Guest</span>}
-                          {p.leftEarly && <span className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">Left early</span>}
+                          {p.leftEarly && <span className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">Left early</span>}
                         </div>
                         {recorded ? (
                           <p className="text-felt-500 text-xs mt-1">
-                            {formatCents(total)} in · {formatCents(p.cashOutCents!)} out
-                            <span className={`ml-1 font-bold ${net >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                            <span className="tnum">{formatCents(total)}</span> in · <span className="tnum">{formatCents(p.cashOutCents!)}</span> out
+                            <span className={`ml-1 font-bold tnum ${net > 0 ? 'text-gold-400' : net < 0 ? 'text-red-600' : 'text-felt-400'}`}>
                               ({net >= 0 ? '+' : ''}{formatCents(net)})
                             </span>
                           </p>
@@ -571,7 +571,7 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
                       </div>
                       {isHost && (
                         <button onClick={() => setRecordFor(p)}
-                          className={`text-xs rounded-lg px-2.5 py-1.5 transition-all flex-shrink-0 ${recorded ? 'border border-felt-500 hover:border-felt-400 text-felt-400 hover:text-felt-100' : 'bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400'}`}>
+                          className={`text-xs rounded-lg px-2.5 py-1.5 transition-all flex-shrink-0 ${recorded ? 'border border-felt-600 hover:border-felt-500 text-felt-400 hover:text-felt-100' : 'bg-gold-50 hover:bg-gold-100 border border-gold-200 text-gold-700'}`}>
                           {recorded ? 'Edit' : 'Record results'}
                         </button>
                       )}
@@ -585,14 +585,14 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
               <div className="pt-2 space-y-2">
                 {!allCashedOut && <p className="text-felt-500 text-sm text-center">Record results for all players first.</p>}
                 {allCashedOut && discrepancy !== 0 && (
-                  <p className="text-amber-400 text-sm text-center">
-                    Totals don&apos;t balance: {formatCents(Math.abs(discrepancy))} {discrepancy > 0 ? 'over' : 'short'}. Edit a player&apos;s results to fix.
+                  <p className="text-amber-700 text-sm text-center">
+                    Totals don&apos;t balance: <span className="tnum">{formatCents(Math.abs(discrepancy))}</span> {discrepancy > 0 ? 'over' : 'short'}. Edit a player&apos;s results to fix.
                   </p>
                 )}
-                {endError && <p className="text-red-400 text-sm text-center">{endError}</p>}
+                {endError && <p className="text-red-600 text-sm text-center">{endError}</p>}
                 <button onClick={endSession} disabled={endLoad || !allCashedOut || discrepancy !== 0}
-                  className="w-full bg-amber-500/10 hover:bg-amber-500/20 disabled:opacity-40 border border-amber-500/30 text-amber-400 font-bold py-3 rounded-xl transition-all">
-                  {endLoad ? 'Ending session…' : '■ End Session'}
+                  className="w-full bg-amber-50 hover:bg-amber-100 disabled:opacity-40 border border-amber-200 text-amber-800 font-bold py-3 rounded-xl transition-all">
+                  {endLoad ? 'Ending session…' : 'End Session'}
                 </button>
               </div>
             )}
@@ -617,9 +617,9 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
                             <span className="text-felt-100 font-medium text-sm">{pName(p)}</span>
                             {!p.userId && <span className="text-xs text-felt-500 bg-felt-700 rounded-full px-2 py-0.5">Guest</span>}
                           </div>
-                          <p className="text-felt-500 text-xs mt-0.5">{formatCents(total)} in · {formatCents(p.cashOutCents ?? 0)} out</p>
+                          <p className="text-felt-500 text-xs mt-0.5"><span className="tnum">{formatCents(total)}</span> in · <span className="tnum">{formatCents(p.cashOutCents ?? 0)}</span> out</p>
                         </div>
-                        <span className={`font-bold text-sm ${net > 0 ? 'text-emerald-400' : net < 0 ? 'text-red-400' : 'text-felt-400'}`}>
+                        <span className={`font-bold text-sm tnum ${net > 0 ? 'text-gold-400' : net < 0 ? 'text-red-600' : 'text-felt-400'}`}>
                           {net > 0 ? '+' : ''}{formatCents(net)}
                         </span>
                       </div>

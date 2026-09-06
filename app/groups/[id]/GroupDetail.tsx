@@ -42,10 +42,10 @@ interface GroupDetailProps {
 }
 
 const STATUS_STYLE: Record<string, string> = {
-  DRAFT:   'bg-felt-600/60 text-felt-300 border-felt-500',
-  ACTIVE:  'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  ENDED:   'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  SETTLED: 'bg-gold-400/10 text-gold-400 border-gold-400/20',
+  DRAFT:   'bg-felt-700 text-felt-300 border-felt-600',
+  ACTIVE:  'bg-gold-50 text-gold-700 border-gold-200',
+  ENDED:   'bg-amber-50 text-amber-800 border-amber-200',
+  SETTLED: 'bg-gold-50 text-gold-700 border-gold-200',
 }
 
 const RANGE_LABELS: { value: LeaderboardRange; label: string }[] = [
@@ -54,14 +54,12 @@ const RANGE_LABELS: { value: LeaderboardRange; label: string }[] = [
   { value: 'month',    label: 'This month' },
 ]
 
-const MEDALS = ['🥇', '🥈', '🥉']
-
 function Initials({ name }: { name: string }) {
   const parts = name.trim().split(' ')
   const initials =
     parts.length >= 2 ? parts[0][0] + parts[parts.length - 1][0] : parts[0].slice(0, 2)
   return (
-    <div className="w-9 h-9 rounded-full bg-gold-400/15 border border-gold-400/25 text-gold-400 flex items-center justify-center text-sm font-bold uppercase flex-shrink-0">
+    <div className="w-9 h-9 rounded-full bg-gold-50 border border-gold-200 text-gold-700 flex items-center justify-center text-sm font-bold uppercase flex-shrink-0">
       {initials}
     </div>
   )
@@ -130,7 +128,7 @@ export default function GroupDetail({
             <p className="text-xs text-felt-400 uppercase tracking-widest font-medium mb-1">
               Invite code
             </p>
-            <p className="text-gold-400 font-mono text-2xl font-bold tracking-[0.3em]">
+            <p className="text-gold-400 font-mono text-2xl font-bold tracking-[0.3em] tnum">
               {inviteCode}
             </p>
           </div>
@@ -162,7 +160,7 @@ export default function GroupDetail({
             onClick={() => setTab(t)}
             className={`flex-1 rounded-lg py-2 text-sm font-semibold capitalize transition-all ${
               tab === t
-                ? 'bg-gold-400 text-felt-900'
+                ? 'bg-gold-400 text-white'
                 : 'text-felt-400 hover:text-felt-100'
             }`}
           >
@@ -181,7 +179,7 @@ export default function GroupDetail({
                 onClick={() => setRange(value)}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all border ${
                   range === value
-                    ? 'bg-gold-400/10 text-gold-400 border-gold-400/30'
+                    ? 'bg-gold-50 text-gold-700 border-gold-200'
                     : 'text-felt-400 border-felt-600 hover:text-felt-200 hover:border-felt-500'
                 }`}
               >
@@ -192,7 +190,6 @@ export default function GroupDetail({
 
           {leaderboard.length === 0 ? (
             <div className="bg-felt-800 rounded-2xl p-10 text-center border border-felt-600 shadow-card">
-              <p className="text-4xl mb-3 opacity-30">♠</p>
               <p className="text-felt-300">No settled sessions yet.</p>
               <p className="text-felt-500 text-sm mt-1">
                 The leaderboard updates after sessions are settled.
@@ -216,14 +213,14 @@ export default function GroupDetail({
                       key={entry.userId}
                       className={`border-b border-felt-600/50 last:border-0 transition-colors ${
                         entry.userId === currentUserId
-                          ? 'bg-gold-400/5'
+                          ? 'bg-gold-50 border-gold-200'
                           : i === 0
-                          ? 'bg-gold-400/[0.03]'
+                          ? 'bg-gold-50/50'
                           : ''
                       }`}
                     >
-                      <td className="px-5 py-4 text-felt-400 text-sm">
-                        {i < 3 ? MEDALS[i] : i + 1}
+                      <td className="px-5 py-4 text-felt-400 text-sm tnum">
+                        {i + 1}
                       </td>
                       <td className="px-3 py-4">
                         <div className="flex items-center gap-2.5">
@@ -238,11 +235,11 @@ export default function GroupDetail({
                       </td>
                       <td className="px-4 py-4 text-right">
                         <span
-                          className={`text-sm font-bold ${
+                          className={`text-sm font-bold tnum ${
                             entry.netCents > 0
-                              ? 'text-emerald-400'
+                              ? 'text-gold-400'
                               : entry.netCents < 0
-                              ? 'text-red-400'
+                              ? 'text-red-600'
                               : 'text-felt-400'
                           }`}
                         >
@@ -250,10 +247,10 @@ export default function GroupDetail({
                           {formatCents(entry.netCents)}
                         </span>
                       </td>
-                      <td className="px-4 py-4 text-right text-sm text-felt-400 hidden sm:table-cell">
+                      <td className="px-4 py-4 text-right text-sm text-felt-400 hidden sm:table-cell tnum">
                         {entry.roi > 0 ? '+' : ''}{entry.roi.toFixed(1)}%
                       </td>
-                      <td className="px-5 py-4 text-right text-sm text-felt-400 hidden sm:table-cell">
+                      <td className="px-5 py-4 text-right text-sm text-felt-400 hidden sm:table-cell tnum">
                         {entry.sessionsPlayed}
                       </td>
                     </tr>
@@ -269,7 +266,7 @@ export default function GroupDetail({
       {tab === 'members' && (
         <div className="bg-felt-800 rounded-2xl border border-felt-600 overflow-hidden shadow-card">
           {kickError && (
-            <p className="text-red-400 text-xs text-center px-5 py-2 border-b border-felt-600">{kickError}</p>
+            <p className="text-red-600 text-xs text-center px-5 py-2 border-b border-felt-600">{kickError}</p>
           )}
           {memberList.map((m, i) => (
             <div
@@ -297,12 +294,12 @@ export default function GroupDetail({
                   </span>
                 )}
                 {m.userId === group.createdById && (
-                  <span className="text-xs font-semibold bg-gold-400/10 text-gold-400 border border-gold-400/20 rounded-full px-2.5 py-1">
+                  <span className="text-xs font-semibold bg-gold-50 text-gold-700 border border-gold-200 rounded-full px-2.5 py-1">
                     Creator
                   </span>
                 )}
                 {m.role === 'HOST_CAPABLE' && m.userId !== group.createdById && !m.user.isGuest && (
-                  <span className="text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full px-2.5 py-1">
+                  <span className="text-xs font-semibold bg-gold-50 text-gold-700 border border-gold-200 rounded-full px-2.5 py-1">
                     Host
                   </span>
                 )}
@@ -315,7 +312,7 @@ export default function GroupDetail({
                       <button
                         onClick={() => kickMember(m.userId)}
                         disabled={kicking === m.userId}
-                        className="text-xs bg-red-500/10 hover:bg-red-500/20 border border-red-500/40 text-red-400 rounded-lg px-2.5 py-1 transition-all disabled:opacity-50"
+                        className="text-xs bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-lg px-2.5 py-1 transition-all disabled:opacity-50"
                       >
                         {kicking === m.userId ? '…' : 'Yes'}
                       </button>
@@ -329,7 +326,7 @@ export default function GroupDetail({
                   ) : (
                     <button
                       onClick={() => { setKickConfirm(m.userId); setKickError('') }}
-                      className="text-xs text-felt-600 hover:text-red-400 border border-felt-700 hover:border-red-500/40 rounded-lg px-2.5 py-1 transition-all"
+                      className="text-xs text-felt-600 hover:text-red-600 border border-felt-700 hover:border-red-200 rounded-lg px-2.5 py-1 transition-all"
                     >
                       Remove
                     </button>

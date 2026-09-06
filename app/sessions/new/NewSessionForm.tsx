@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 type Member = { id: string; displayName: string }
 
 const inputCls =
-  'w-full bg-felt-900 border border-felt-500 rounded-lg px-4 py-2.5 text-felt-50 placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors text-sm'
+  'w-full bg-felt-800 border border-felt-600 rounded-lg px-4 py-2.5 text-felt-50 placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors text-sm'
 
 export default function NewSessionForm({
   groupId,
@@ -87,7 +87,7 @@ export default function NewSessionForm({
               onClick={() => setRounding(mode)}
               className={`rounded-xl border py-3 px-4 text-left transition-all ${
                 roundingMode === mode
-                  ? 'border-gold-400/50 bg-gold-400/8 text-gold-400'
+                  ? 'border-gold-200 bg-gold-50 text-gold-700'
                   : 'border-felt-600 text-felt-400 hover:border-felt-500 hover:text-felt-200'
               }`}
             >
@@ -131,12 +131,12 @@ export default function NewSessionForm({
         </p>
       </div>
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       <button
         type="submit"
         disabled={loading || selectedIds.size === 0}
-        className="w-full bg-gold-400 hover:bg-gold-300 disabled:bg-gold-400/40 text-felt-900 font-bold py-3 rounded-xl transition-all"
+        className="w-full bg-gold-400 hover:bg-gold-300 disabled:bg-gold-400/40 text-white font-bold py-3 rounded-xl transition-all"
       >
         {loading ? 'Creating…' : 'Create Session'}
       </button>

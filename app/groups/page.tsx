@@ -21,11 +21,11 @@ export default async function GroupsPage() {
   })
 
   return (
-    <main className="min-h-screen bg-felt-900 px-6 py-10">
+    <main className="min-h-[100dvh] px-5 py-10">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-display text-3xl font-bold text-felt-50">Groups</h1>
+            <h1 className="font-semibold tracking-tight text-3xl font-bold text-felt-50">Groups</h1>
             <p className="text-felt-400 mt-1 text-sm">Your poker groups</p>
           </div>
           {!isGuest && <CreateGroupModal />}
@@ -33,7 +33,6 @@ export default async function GroupsPage() {
 
         {memberships.length === 0 ? (
           <div className="bg-felt-800 rounded-2xl p-12 text-center border border-felt-600 mb-6 shadow-card">
-            <div className="text-5xl mb-4 opacity-30 font-display">♠</div>
             <p className="text-felt-100 font-semibold text-lg mb-1">No groups yet</p>
             <p className="text-felt-400 text-sm">
               Create a group to get started, or join one below with an invite code.
@@ -58,7 +57,7 @@ export default async function GroupsPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   {m.role === 'HOST_CAPABLE' && (
-                    <span className="text-xs font-semibold bg-gold-400/10 text-gold-400 border border-gold-400/20 rounded-full px-2.5 py-1">
+                    <span className="text-xs font-semibold bg-gold-50 text-gold-700 border border-gold-200 rounded-full px-2.5 py-1">
                       Host
                     </span>
                   )}

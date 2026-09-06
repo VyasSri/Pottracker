@@ -48,8 +48,11 @@ interface Props {
   currentUserId: string
 }
 
-const GREEN = '#34d399'
-const RED   = '#e05050'
+const GREEN = '#059669'
+const RED   = '#dc2626'
+const AXIS  = '#78716c'
+const AXIS_MUTED = '#57534e'
+const CURSOR = 'rgba(5,150,105,0.06)'
 
 function CentsTick({ x, y, payload }: { x?: number; y?: number; payload?: { value: number } }) {
   if (!payload) return null
@@ -69,7 +72,7 @@ function CentsTooltip({ active, payload, label }: {
   return (
     <div className="bg-felt-800 border border-felt-600 rounded-lg px-3 py-2 text-xs shadow-card">
       <p className="text-felt-400 mb-1">{label}</p>
-      <p className={`font-bold ${v >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+      <p className={`font-semibold tnum ${v >= 0 ? 'text-gold-400' : 'text-red-600'}`}>
         {v >= 0 ? '+' : ''}{formatCents(v)}
       </p>
     </div>
@@ -115,19 +118,19 @@ function BalancesTab({ balances, currentUserId }: { balances: BalanceRow[]; curr
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="min-w-0">
             {isBounce && (
-              <p className="text-xs text-amber-400 font-bold uppercase tracking-wider mb-1">
-                {b.kind === 'BOUNCE_QUALIFIER' ? 'Bounce — Step 1 of 2' : 'Bounce — Step 2 of 2'}
+              <p className="text-xs text-amber-700 font-semibold uppercase tracking-wider mb-1">
+                {b.kind === 'BOUNCE_QUALIFIER' ? 'Bounce · Step 1 of 2' : 'Bounce · Step 2 of 2'}
               </p>
             )}
             <p className="text-felt-100 text-sm font-semibold">
-              <span className={iAmPayer ? 'text-red-300' : 'text-emerald-300'}>{b.fromName}</span>
+              <span className={iAmPayer ? 'text-red-600' : 'text-gold-400'}>{b.fromName}</span>
               <span className="text-felt-500 mx-1.5">→</span>
-              <span className={iAmPayee ? 'text-emerald-300' : 'text-felt-100'}>{b.toName}</span>
+              <span className={iAmPayee ? 'text-gold-400' : 'text-felt-100'}>{b.toName}</span>
             </p>
-            {iAmPayer && !fullyDone && <p className="text-red-400 text-xs mt-0.5">You owe this</p>}
-            {iAmPayee && !fullyDone && <p className="text-emerald-400 text-xs mt-0.5">Owed to you</p>}
+            {iAmPayer && !fullyDone && <p className="text-red-600 text-xs mt-0.5">You owe this</p>}
+            {iAmPayee && !fullyDone && <p className="text-gold-400 text-xs mt-0.5">Owed to you</p>}
           </div>
-          <span className="text-emerald-400 font-bold text-base flex-shrink-0">{formatCents(b.amountCents)}</span>
+          <span className="text-felt-50 font-semibold text-base tnum flex-shrink-0">{formatCents(b.amountCents)}</span>
         </div>
 
         {/* Session + group link */}
@@ -145,7 +148,7 @@ function BalancesTab({ balances, currentUserId }: { balances: BalanceRow[]; curr
         {isBounce && (
           <p className="text-felt-500 text-xs mb-3 leading-relaxed">
             {b.kind === 'BOUNCE_QUALIFIER'
-              ? `${b.fromName} sends ${b.toName} $1.00 first — this qualifies the return payment.`
+              ? `${b.fromName} sends ${b.toName} $1.00 first. This qualifies the return payment.`
               : `${b.fromName} then sends ${b.toName} ${formatCents(b.amountCents)}, clearing the original debt and returning the $1.00.`}
           </p>
         )}
@@ -154,15 +157,15 @@ function BalancesTab({ balances, currentUserId }: { balances: BalanceRow[]; curr
         <div className="flex flex-wrap gap-1.5 mb-3">
           <span className={`text-xs rounded-full px-2.5 py-0.5 border ${
             b.payerConfirmed
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-felt-700 border-felt-600 text-felt-500'
+              ? 'bg-gold-50 border-gold-200 text-gold-600'
+              : 'bg-felt-700 border-felt-600 text-felt-400'
           }`}>
             {b.fromName} sent {b.payerConfirmed ? '✓' : '…'}
           </span>
           <span className={`text-xs rounded-full px-2.5 py-0.5 border ${
             b.payeeConfirmed
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-felt-700 border-felt-600 text-felt-500'
+              ? 'bg-gold-50 border-gold-200 text-gold-600'
+              : 'bg-felt-700 border-felt-600 text-felt-400'
           }`}>
             {b.toName} received {b.payeeConfirmed ? '✓' : '…'}
           </span>
@@ -170,9 +173,9 @@ function BalancesTab({ balances, currentUserId }: { balances: BalanceRow[]; curr
 
         {/* Timestamps */}
         <div className="space-y-0.5 mb-3">
-          <p className="text-felt-600 text-xs">Created {formatTs(b.createdAt)}</p>
+          <p className="text-felt-500 text-xs">Created {formatTs(b.createdAt)}</p>
           {b.confirmedAt && (
-            <p className="text-emerald-700 text-xs">Fully confirmed {formatTs(b.confirmedAt)}</p>
+            <p className="text-gold-600 text-xs">Fully confirmed {formatTs(b.confirmedAt)}</p>
           )}
         </div>
 
@@ -182,18 +185,18 @@ function BalancesTab({ balances, currentUserId }: { balances: BalanceRow[]; curr
             {payeeZelle ? (
               <>
                 <a href={zelleDeepLink(payeeZelle, b.amountCents)} target="_blank" rel="noopener noreferrer"
-                  className="block w-full text-center text-sm font-semibold bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded-lg py-2 transition-all">
+                  className="block w-full text-center text-sm font-semibold bg-gold-400 hover:bg-gold-300 text-white rounded-lg py-2 transition-colors">
                   Open Zelle →
                 </a>
                 <p className="text-felt-500 text-xs text-center">{zelleInstructions(payeeZelle, b.amountCents)}</p>
               </>
             ) : (
-              <p className="text-felt-500 text-xs text-center bg-felt-700 rounded-lg py-2 px-3">
-                {b.toName} hasn&apos;t set a Zelle handle — coordinate directly.
+              <p className="text-felt-400 text-xs text-center bg-felt-700 rounded-lg py-2 px-3">
+                {b.toName} hasn&apos;t set a Zelle handle. Coordinate directly.
               </p>
             )}
             <Link href={`/sessions/${b.sessionId}`}
-              className="block w-full text-center text-xs font-semibold border border-felt-500 hover:border-gold-400/50 text-felt-300 hover:text-gold-400 rounded-lg py-2 transition-all">
+              className="block w-full text-center text-xs font-semibold border border-felt-600 hover:border-gold-400/50 text-felt-300 hover:text-gold-400 rounded-lg py-2 transition-all">
               Confirm payment in session →
             </Link>
           </div>
@@ -201,7 +204,7 @@ function BalancesTab({ balances, currentUserId }: { balances: BalanceRow[]; curr
 
         {iAmPayee && b.payerConfirmed && !b.payeeConfirmed && (
           <Link href={`/sessions/${b.sessionId}`}
-            className="block w-full text-center text-xs font-semibold border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 rounded-lg py-2 transition-all">
+            className="block w-full text-center text-xs font-semibold border border-gold-200 text-gold-600 hover:bg-gold-50 rounded-lg py-2 transition-all">
             Confirm receipt in session →
           </Link>
         )}
@@ -219,9 +222,8 @@ function BalancesTab({ balances, currentUserId }: { balances: BalanceRow[]; curr
   if (balances.length === 0) {
     return (
       <div className="bg-felt-800 rounded-2xl border border-felt-600 p-12 text-center shadow-card">
-        <p className="text-4xl font-display text-felt-600 mb-3">♦</p>
-        <p className="text-felt-400 text-sm">No payment history yet.</p>
-        <p className="text-felt-500 text-xs mt-1">Balances appear here after sessions are ended.</p>
+        <p className="text-felt-200 text-sm font-medium">No payment history yet.</p>
+        <p className="text-felt-400 text-xs mt-1">Balances appear here after sessions are ended.</p>
       </div>
     )
   }
@@ -257,9 +259,8 @@ function StatsTab({ allTimeNet, roi, sessionsPlayed, longestStreak, monthly, byG
   if (sessionsPlayed === 0) {
     return (
       <div className="bg-felt-800 rounded-2xl border border-felt-600 p-12 text-center shadow-card">
-        <p className="text-4xl font-display text-felt-600 mb-3">♠</p>
-        <p className="text-felt-400 text-sm">No settled sessions yet.</p>
-        <p className="text-felt-500 text-xs mt-1">Stats appear after your first session settles.</p>
+        <p className="text-felt-200 text-sm font-medium">No settled sessions yet.</p>
+        <p className="text-felt-400 text-xs mt-1">Stats appear after your first session settles.</p>
       </div>
     )
   }
@@ -268,28 +269,25 @@ function StatsTab({ allTimeNet, roi, sessionsPlayed, longestStreak, monthly, byG
     <div className="space-y-6">
       {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className={`rounded-xl border p-4 relative overflow-hidden ${allTimeNet >= 0 ? 'bg-emerald-950/60 border-emerald-700/40' : 'bg-red-950/60 border-red-700/40'}`}>
-          <div className={`absolute inset-0 opacity-10 ${allTimeNet >= 0 ? 'bg-emerald-400' : 'bg-red-400'}`} />
-          <p className="text-xs text-felt-400 uppercase tracking-wider mb-1 relative z-10">All-time net</p>
-          <p className={`text-xl font-bold relative z-10 ${allTimeNet >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+        <div className="rounded-xl border border-felt-600 bg-felt-800 shadow-card p-4">
+          <p className="text-xs text-felt-400 font-medium mb-1.5">All-time net</p>
+          <p className={`text-xl font-semibold tnum ${allTimeNet > 0 ? 'text-gold-400' : allTimeNet < 0 ? 'text-red-600' : 'text-felt-100'}`}>
             {allTimeNet > 0 ? '+' : ''}{formatCents(allTimeNet)}
           </p>
         </div>
-        <div className="rounded-xl border p-4 bg-amber-950/60 border-amber-700/40 relative overflow-hidden">
-          <div className="absolute inset-0 bg-amber-400/10" />
-          <p className="text-xs text-amber-300 uppercase tracking-wider mb-1 relative z-10">ROI</p>
-          <p className={`text-xl font-bold relative z-10 ${roi !== null && roi >= 0 ? 'text-amber-300' : 'text-red-400'}`}>
-            {roi !== null ? `${roi > 0 ? '+' : ''}${roi.toFixed(1)}%` : '—'}
+        <div className="rounded-xl border border-felt-600 bg-felt-800 shadow-card p-4">
+          <p className="text-xs text-felt-400 font-medium mb-1.5">ROI</p>
+          <p className={`text-xl font-semibold tnum ${roi === null ? 'text-felt-300' : roi >= 0 ? 'text-gold-400' : 'text-red-600'}`}>
+            {roi !== null ? `${roi > 0 ? '+' : ''}${roi.toFixed(1)}%` : '·'}
           </p>
         </div>
-        <div className="rounded-xl border p-4 bg-indigo-950/60 border-indigo-700/40 relative overflow-hidden">
-          <div className="absolute inset-0 bg-indigo-400/10" />
-          <p className="text-xs text-indigo-300 uppercase tracking-wider mb-1 relative z-10">Sessions</p>
-          <p className="text-xl font-bold text-indigo-200 relative z-10">{sessionsPlayed}</p>
+        <div className="rounded-xl border border-felt-600 bg-felt-800 shadow-card p-4">
+          <p className="text-xs text-felt-400 font-medium mb-1.5">Sessions</p>
+          <p className="text-xl font-semibold tnum text-felt-100">{sessionsPlayed}</p>
         </div>
-        <div className="rounded-xl border p-4 bg-felt-800 border-felt-600">
-          <p className="text-xs text-felt-400 uppercase tracking-wider mb-1">Best streak</p>
-          <p className="text-xl font-bold text-gold-400">{longestStreak > 0 ? `${longestStreak}W` : '—'}</p>
+        <div className="rounded-xl border border-felt-600 bg-felt-800 shadow-card p-4">
+          <p className="text-xs text-felt-400 font-medium mb-1.5">Best streak</p>
+          <p className="text-xl font-semibold tnum text-gold-400">{longestStreak > 0 ? `${longestStreak}W` : '·'}</p>
         </div>
       </div>
 
@@ -299,9 +297,9 @@ function StatsTab({ allTimeNet, roi, sessionsPlayed, longestStreak, monthly, byG
           <h3 className="text-felt-100 font-semibold mb-4">Monthly earnings</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={monthly} margin={{ left: 16, right: 8, top: 4, bottom: 4 }}>
-              <XAxis dataKey="month" tick={{ fill: '#8a3a40', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="month" tick={{ fill: AXIS, fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={<CentsTick />} axisLine={false} tickLine={false} width={72} />
-              <Tooltip content={<CentsTooltip />} cursor={{ fill: 'rgba(224,80,80,0.06)' }} />
+              <Tooltip content={<CentsTooltip />} cursor={{ fill: CURSOR }} />
               <Bar dataKey="netCents" radius={[4, 4, 0, 0]} maxBarSize={40}>
                 {monthly.map((entry, i) => <Cell key={i} fill={entry.netCents >= 0 ? GREEN : RED} />)}
               </Bar>
@@ -316,9 +314,9 @@ function StatsTab({ allTimeNet, roi, sessionsPlayed, longestStreak, monthly, byG
           <h3 className="text-felt-100 font-semibold mb-4">Net by group</h3>
           <ResponsiveContainer width="100%" height={Math.max(160, byGroup.length * 48)}>
             <BarChart data={byGroup} layout="vertical" margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
-              <XAxis type="number" dataKey="netCents" tick={{ fill: '#8a3a40', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => formatCents(v)} />
-              <YAxis type="category" dataKey="groupName" tick={{ fill: '#d4a0a8', fontSize: 12 }} axisLine={false} tickLine={false} width={120} />
-              <Tooltip content={<CentsTooltip />} cursor={{ fill: 'rgba(224,80,80,0.06)' }} />
+              <XAxis type="number" dataKey="netCents" tick={{ fill: AXIS, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => formatCents(v)} />
+              <YAxis type="category" dataKey="groupName" tick={{ fill: AXIS_MUTED, fontSize: 12 }} axisLine={false} tickLine={false} width={120} />
+              <Tooltip content={<CentsTooltip />} cursor={{ fill: CURSOR }} />
               <Bar dataKey="netCents" radius={[0, 4, 4, 0]} maxBarSize={28}>
                 {byGroup.map((entry, i) => <Cell key={i} fill={entry.netCents >= 0 ? GREEN : RED} />)}
               </Bar>
@@ -334,15 +332,15 @@ function StatsTab({ allTimeNet, roi, sessionsPlayed, longestStreak, monthly, byG
         </div>
         {sessions.map((s, i) => (
           <Link key={s.id} href={`/sessions/${s.id}`}
-            className={`flex items-center justify-between px-5 py-3.5 hover:bg-felt-700 transition-colors ${i < sessions.length - 1 ? 'border-b border-felt-700' : ''}`}>
+            className={`flex items-center justify-between px-5 py-3.5 hover:bg-felt-700 transition-colors ${i < sessions.length - 1 ? 'border-b border-felt-600' : ''}`}>
             <div>
               <p className="text-felt-100 text-sm font-medium">{s.groupName}</p>
-              <p className="text-felt-500 text-xs mt-0.5">
+              <p className="text-felt-400 text-xs mt-0.5">
                 {new Date(s.endedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                {' · '}buy-in {formatCents(s.buyInCents)}
+                {' · '}buy-in <span className="tnum">{formatCents(s.buyInCents)}</span>
               </p>
             </div>
-            <span className={`text-sm font-bold ${s.netCents > 0 ? 'text-emerald-400' : s.netCents < 0 ? 'text-red-400' : 'text-felt-400'}`}>
+            <span className={`text-sm font-semibold tnum ${s.netCents > 0 ? 'text-gold-400' : s.netCents < 0 ? 'text-red-600' : 'text-felt-400'}`}>
               {s.netCents > 0 ? '+' : ''}{formatCents(s.netCents)}
             </span>
           </Link>
@@ -358,22 +356,22 @@ export default function StatsView(props: Props) {
   const pendingCount  = props.balances.filter((b) => !(b.payerConfirmed && b.payeeConfirmed)).length
 
   return (
-    <main className="min-h-screen bg-felt-900 px-6 py-10">
+    <main className="min-h-[100dvh] px-5 py-10">
       <div className="max-w-3xl mx-auto">
         <div className="mb-7">
-          <h1 className="font-display text-3xl font-bold text-felt-50 mb-1">My Stats</h1>
-          <p className="text-felt-400 text-sm">Your personal ledger across all groups.</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-felt-50">My Stats</h1>
+          <p className="text-felt-400 text-sm mt-1">Your personal ledger across all groups.</p>
         </div>
 
         {/* Tab bar */}
-        <div className="flex gap-1 mb-6 bg-felt-800 rounded-xl p-1 border border-felt-600">
+        <div className="flex gap-1 mb-6 bg-felt-800 rounded-xl p-1 border border-felt-600 shadow-card">
           {([
             { key: 'stats',    label: 'Stats & History' },
             { key: 'balances', label: `My Balances${pendingCount > 0 ? ` (${pendingCount})` : ''}` },
           ] as const).map(({ key, label }) => (
             <button key={key} onClick={() => setTab(key)}
-              className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${
-                tab === key ? 'bg-gold-400 text-felt-900' : 'text-felt-400 hover:text-felt-100'
+              className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${
+                tab === key ? 'bg-gold-400 text-white' : 'text-felt-400 hover:text-felt-100'
               }`}>
               {label}
             </button>

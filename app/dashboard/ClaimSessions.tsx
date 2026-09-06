@@ -39,7 +39,7 @@ export default function ClaimSessions({ initial }: { initial: GuestSlot[] }) {
   }
 
   return (
-    <div className="mb-8 bg-felt-800 rounded-2xl border border-gold-400/30 shadow-card overflow-hidden">
+    <div className="mb-8 bg-felt-800 rounded-2xl border border-gold-200 shadow-card overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-felt-600">
         <div>
           <h2 className="text-felt-50 font-semibold">Were you a guest in any of these sessions?</h2>
@@ -75,19 +75,19 @@ export default function ClaimSessions({ initial }: { initial: GuestSlot[] }) {
                   )}
                 </div>
                 <p className="text-felt-500 text-xs mt-0.5">
-                  Buy-in {formatCents(slot.buyInCents)} ·{' '}
-                  <span className={net >= 0 ? 'text-emerald-400 font-semibold' : 'text-red-400 font-semibold'}>
+                  Buy-in <span className="tnum">{formatCents(slot.buyInCents)}</span> ·{' '}
+                  <span className={net >= 0 ? 'tnum text-gold-400 font-semibold' : 'tnum text-red-600 font-semibold'}>
                     {net >= 0 ? '+' : ''}{formatCents(net)}
                   </span>
                 </p>
                 {errors[slot.sessionPlayerId] && (
-                  <p className="text-red-400 text-xs mt-1">{errors[slot.sessionPlayerId]}</p>
+                  <p className="text-red-600 text-xs mt-1">{errors[slot.sessionPlayerId]}</p>
                 )}
               </div>
               <button
                 onClick={() => claim(slot)}
                 disabled={!!claiming}
-                className="flex-shrink-0 text-xs font-bold bg-gold-400 hover:bg-gold-300 disabled:opacity-50 text-felt-900 rounded-lg px-3 py-1.5 transition-all"
+                className="flex-shrink-0 text-xs font-bold bg-gold-400 hover:bg-gold-300 disabled:opacity-50 text-white rounded-lg px-3 py-1.5 transition-all"
               >
                 {isClaiming ? 'Claiming…' : "That's me"}
               </button>

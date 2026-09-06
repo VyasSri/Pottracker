@@ -34,20 +34,20 @@ function LoginForm() {
   }
 
   const inputCls =
-    'w-full rounded-lg bg-felt-900 border border-felt-500 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors'
+    'w-full rounded-lg bg-felt-800 border border-felt-600 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors'
 
   return (
     <>
       <h2 className="text-xl font-semibold text-felt-50 mb-6">Sign in to your account</h2>
 
       {notice && (
-        <div className="mb-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-400">
+        <div className="mb-4 rounded-lg bg-gold-50 border border-gold-200 px-4 py-3 text-sm text-gold-700">
           {notice}
         </div>
       )}
 
       {error && (
-        <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
+        <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -88,7 +88,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed text-felt-900 font-bold py-2.5 text-sm transition-all"
+          className="w-full rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-2.5 text-sm transition-all"
         >
           {loading ? 'Signing in…' : 'Sign In'}
         </button>

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --font-playfair: "Playfair Display", Georgia, serif;
+  color-scheme: light;
 }
 
 html {
@@ -11,21 +11,26 @@ html {
 }
 
 body {
-  background-color: #0f0507;
-  color: #fdf5f3;
+  background-color: #f6f5f3;
+  color: #1c1917;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Soft red-black depth via layered gradients */
+/* Faint accent wash at the top . depth without any casino coloring. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 140% 60% at 50% 0%,   #2b0e12 0%, transparent 55%),
-    radial-gradient(ellipse 80%  80% at 0%   100%, #1c090c 0%, transparent 50%),
-    radial-gradient(ellipse 80%  80% at 100% 100%, #1c090c 0%, transparent 50%);
+    radial-gradient(ellipse 120% 50% at 50% -10%, rgba(5, 150, 105, 0.05) 0%, transparent 60%);
   pointer-events: none;
   z-index: 0;
+}
+
+/* Tabular monospaced figures for money . opt in with `tnum`. */
+.tnum {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }

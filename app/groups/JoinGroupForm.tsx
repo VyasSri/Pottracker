@@ -41,17 +41,17 @@ export default function JoinGroupForm() {
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           placeholder="6-character code"
           maxLength={6}
-          className="flex-1 rounded-lg bg-felt-900 border border-felt-500 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors font-mono uppercase tracking-[0.2em]"
+          className="flex-1 rounded-lg bg-felt-800 border border-felt-600 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors font-mono uppercase tracking-[0.2em]"
         />
         <button
           type="submit"
           disabled={status === 'joining' || code.trim().length < 6}
-          className="rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-50 disabled:cursor-not-allowed text-felt-900 font-bold px-5 py-2.5 text-sm transition-all whitespace-nowrap"
+          className="rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-5 py-2.5 text-sm transition-all whitespace-nowrap"
         >
           {status === 'joining' ? 'Joining…' : 'Join'}
         </button>
       </form>
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   )
 }

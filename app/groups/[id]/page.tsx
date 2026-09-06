@@ -60,7 +60,7 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
   }
 
   return (
-    <main className="min-h-screen bg-felt-900 px-6 py-10">
+    <main className="min-h-[100dvh] px-5 py-10">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-2 text-felt-400 text-sm mb-6">
           <Link href="/groups" className="hover:text-felt-100 transition-colors">Groups</Link>
@@ -70,7 +70,7 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
 
         <div className="flex items-start justify-between mb-8 gap-4">
           <div>
-            <h1 className="font-display text-3xl font-bold text-felt-50">{group.name}</h1>
+            <h1 className="font-semibold tracking-tight text-3xl font-bold text-felt-50">{group.name}</h1>
             <p className="text-felt-400 text-sm mt-1">
               {members.length} member{members.length !== 1 ? 's' : ''} ·{' '}
               {sessions.length} session{sessions.length !== 1 ? 's' : ''}
@@ -79,7 +79,7 @@ export default async function GroupPage({ params }: { params: { id: string } }) 
           {!isGuest && (
             <Link
               href={`/sessions/new?groupId=${id}`}
-              className="flex-shrink-0 bg-gold-400 hover:bg-gold-300 text-felt-900 font-bold px-4 py-2 rounded-lg text-sm transition-all"
+              className="flex-shrink-0 bg-gold-400 hover:bg-gold-300 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all"
             >
               + New Session
             </Link>

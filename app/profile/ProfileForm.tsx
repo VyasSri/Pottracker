@@ -13,7 +13,7 @@ interface ProfileFormProps {
 }
 
 const inputCls =
-  'w-full rounded-lg bg-felt-900 border border-felt-500 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors'
+  'w-full rounded-lg bg-felt-800 border border-felt-600 text-felt-50 px-4 py-2.5 text-sm placeholder-felt-400 focus:outline-none focus:ring-1 focus:ring-gold-400 focus:border-gold-400 transition-colors'
 
 function AvatarUploader({
   avatarUrl,
@@ -65,8 +65,7 @@ function AvatarUploader({
       {/* Avatar preview */}
       <div className="relative">
         <div
-          className="w-24 h-24 rounded-full overflow-hidden flex items-center justify-center text-3xl font-bold text-felt-900 flex-shrink-0 ring-2 ring-felt-600"
-          style={{ background: 'linear-gradient(135deg, #e05050, #c53030)' }}
+          className="w-24 h-24 rounded-full overflow-hidden flex items-center justify-center text-3xl font-bold text-white flex-shrink-0 ring-2 ring-felt-600 bg-gold-400"
         >
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -76,7 +75,7 @@ function AvatarUploader({
           )}
         </div>
         {uploading && (
-          <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full bg-felt-50/30 backdrop-blur-sm flex items-center justify-center">
             <div className="w-6 h-6 border-2 border-gold-400 border-t-transparent rounded-full animate-spin" />
           </div>
         )}
@@ -102,7 +101,7 @@ function AvatarUploader({
         )}
       </div>
 
-      {error && <p className="text-red-400 text-xs">{error}</p>}
+      {error && <p className="text-red-600 text-xs">{error}</p>}
     </div>
   )
 }
@@ -191,7 +190,7 @@ export default function ProfileForm({ initialValues }: ProfileFormProps) {
           type="checkbox"
           checked={dashboardPublic}
           onChange={(e) => setPublic(e.target.checked)}
-          className="mt-0.5 h-4 w-4 rounded border-felt-500 bg-felt-900 accent-gold-400 cursor-pointer"
+          className="mt-0.5 h-4 w-4 rounded border-felt-600 bg-felt-800 accent-gold-400 cursor-pointer"
         />
         <div>
           <p className="text-sm text-felt-200">Make my stats dashboard public</p>
@@ -202,12 +201,12 @@ export default function ProfileForm({ initialValues }: ProfileFormProps) {
       </label>
 
       {status === 'error' && errorMsg && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 text-sm text-red-400">
+        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
           {errorMsg}
         </div>
       )}
       {status === 'saved' && (
-        <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-400">
+        <div className="rounded-lg bg-gold-50 border border-gold-200 px-4 py-3 text-sm text-gold-700">
           Profile saved successfully.
         </div>
       )}
@@ -215,7 +214,7 @@ export default function ProfileForm({ initialValues }: ProfileFormProps) {
       <button
         type="submit"
         disabled={status === 'saving'}
-        className="w-full rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed text-felt-900 font-bold py-2.5 text-sm transition-all"
+        className="w-full rounded-lg bg-gold-400 hover:bg-gold-300 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-2.5 text-sm transition-all"
       >
         {status === 'saving' ? 'Saving…' : 'Save Profile'}
       </button>

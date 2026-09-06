@@ -17,7 +17,7 @@ const TYPE_ICON: Record<string, string> = {
   SESSION_ENDED:     '■',
   SETTLEMENT_READY:  '⊕',
   PAYMENT_CONFIRMED: '✓',
-  GROUP_INVITE:      '♠',
+  GROUP_INVITE:      '+',
   PAYMENT_REMINDER:  '⏰',
 }
 
@@ -80,11 +80,11 @@ export default function AlertsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-felt-900 px-6 py-10">
+    <main className="min-h-[100dvh] px-5 py-10">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-display text-2xl font-bold text-felt-50">Alerts</h1>
+            <h1 className="font-semibold tracking-tight text-2xl font-bold text-felt-50">Alerts</h1>
             {unread > 0 && (
               <p className="text-felt-400 text-sm mt-0.5">{unread} unread</p>
             )}
@@ -101,7 +101,6 @@ export default function AlertsPage() {
           <div className="text-center text-felt-500 py-16">Loading…</div>
         ) : alerts.length === 0 ? (
           <div className="bg-felt-800 rounded-2xl border border-felt-600 p-12 text-center">
-            <p className="text-4xl font-display text-felt-600 mb-3">♦</p>
             <p className="text-felt-400 text-sm">No alerts yet.</p>
           </div>
         ) : (
