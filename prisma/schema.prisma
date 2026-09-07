@@ -91,12 +91,20 @@ model SessionPlayer {
   cashOutCents Int?
   createdAt    DateTime @default(now())
 
+  // Player-funded buy-in: when another player at the table covers (fronts) some
+  // or all of this player's buy-in, this player owes the funder `fundedAmountCents`.
+  // The debt is folded into the session's settlement. null = self / bank funded.
+  fundedByPlayerId  String?
+  fundedAmountCents Int?
+
   // Relations
   session             Session               @relation(fields: [sessionId], references: [id])
   user                User?                 @relation(fields: [userId], references: [id])
   buyIns              BuyIn[]
   transactionsAsPayer SettlementTransaction[] @relation("TransactionFromPlayer")
   transactionsAsPayee SettlementTransaction[] @relation("TransactionToPlayer")
+  fundedBy            SessionPlayer?          @relation("PlayerFunding", fields: [fundedByPlayerId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  fundedPlayers       SessionPlayer[]         @relation("PlayerFunding")
 }
 
 model BuyIn {

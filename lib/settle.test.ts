@@ -136,6 +136,76 @@ describe('settle()', () => {
     expect(tx.amountCents).toBe(550); // 500 + 50
   });
 
+  // 6b. Player-funded buy-in: funder covered the buyer's buy-in (intra-session debt)
+  it('financed buy-in folds in: B covered A → settlement flips direction', () => {
+    // Poker nets: A won +50, B lost -50. But B covered A's $100 buy-in, so A owes B $100.
+    // adjusted: A = +50 - 100 = -50, B = -50 + 100 = +50  → A pays B $50.
+    const ps = players([
+      ['player-A', +5000],
+      ['player-B', -5000],
+    ]);
+    const plan = settle(ps, {
+      roundingMode: 'BOUNCE',
+      intraSessionDebts: [{ debtorId: 'player-A', creditorId: 'player-B', amountCents: 10000 }],
+    });
+
+    expect(plan.transactions).toHaveLength(1);
+    const tx = plan.transactions[0];
+    expect(tx.kind).toBe('STANDARD');
+    expect(tx.fromId).toBe('player-A');
+    expect(tx.toId).toBe('player-B');
+    expect(tx.amountCents).toBe(5000);
+  });
+
+  it('financed buy-in that exactly offsets poker net → 0 transactions', () => {
+    // A won +100, but A owes B $100 for the covered buy-in → nets cancel to zero.
+    const ps = players([
+      ['player-A', +10000],
+      ['player-B', -10000],
+    ]);
+    const plan = settle(ps, {
+      roundingMode: 'BOUNCE',
+      intraSessionDebts: [{ debtorId: 'player-A', creditorId: 'player-B', amountCents: 10000 }],
+    });
+    expect(plan.transactions).toHaveLength(0);
+    expect(plan.newCarriedBalances).toHaveLength(0);
+  });
+
+  it('financed buy-in and a prior carried balance both fold into the same settlement', () => {
+    // Poker nets zero between A and B. A owes B $3 (financed) and B owes A $1 (carried).
+    // Net effect: A owes B $2 → sub-$1? No, $2.00 ≥ $1 → one STANDARD $2.00.
+    const ps = players([
+      ['player-A', 0],
+      ['player-B', 0],
+    ]);
+    const plan = settle(ps, {
+      roundingMode: 'BOUNCE',
+      priorCarriedBalances: [{ debtorId: 'player-B', creditorId: 'player-A', amountCents: 100 }],
+      intraSessionDebts: [{ debtorId: 'player-A', creditorId: 'player-B', amountCents: 300 }],
+    });
+    expect(plan.transactions).toHaveLength(1);
+    const tx = plan.transactions[0];
+    expect(tx.kind).toBe('STANDARD');
+    expect(tx.fromId).toBe('player-A');
+    expect(tx.toId).toBe('player-B');
+    expect(tx.amountCents).toBe(200);
+  });
+
+  it('financed buy-in with a guest funder settles like any other id', () => {
+    const ps = players([
+      ['guest-funder', 0],
+      ['user-buyer', 0],
+    ]);
+    const plan = settle(ps, {
+      roundingMode: 'BOUNCE',
+      intraSessionDebts: [{ debtorId: 'user-buyer', creditorId: 'guest-funder', amountCents: 4200 }],
+    });
+    expect(plan.transactions).toHaveLength(1);
+    expect(plan.transactions[0].fromId).toBe('user-buyer');
+    expect(plan.transactions[0].toId).toBe('guest-funder');
+    expect(plan.transactions[0].amountCents).toBe(4200);
+  });
+
   // 7. Guest routing: guest IDs work the same as regular player IDs
   it('guest player IDs appear as fromId/toId without special handling', () => {
     const ps = players([

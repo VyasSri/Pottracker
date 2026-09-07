@@ -12,6 +12,7 @@ type Player   = {
   id: string; userId: string | null; guestName: string | null
   leftEarly: boolean; cashOutCents: number | null
   user: PUser | null; buyIns: BuyIn[]
+  fundedByPlayerId: string | null; fundedAmountCents: number | null
 }
 type TxPlayer = { id: string; userId: string | null; guestName: string | null; user: PUser | null }
 type STx      = {
@@ -110,8 +111,9 @@ function AddPlayerModal({ sessionId, existing, groupMembers, onClose, onAdded }:
 }
 
 // ─── Record Results Modal ────────────────────────────────────────────────────
-function RecordResultsModal({ player, sessionId, defaultBuyInCents, onClose, onDone }: {
+function RecordResultsModal({ player, sessionId, defaultBuyInCents, otherPlayers, onClose, onDone }: {
   player: Player; sessionId: string; defaultBuyInCents: number
+  otherPlayers: { id: string; name: string }[]
   onClose: () => void; onDone: () => Promise<void>
 }) {
   const existingTotal             = buyTotal(player)
@@ -119,6 +121,10 @@ function RecordResultsModal({ player, sessionId, defaultBuyInCents, onClose, onD
   const [invested, setInvested]   = useState((prefill / 100).toFixed(2))
   const [cashOut, setCashOut]     = useState((player.cashOutCents != null ? player.cashOutCents / 100 : 0).toFixed(2))
   const [leftEarly, setLeftEarly] = useState(player.leftEarly)
+  const [fundedBy, setFundedBy]   = useState(player.fundedByPlayerId ?? '')
+  const [fundedAmt, setFundedAmt] = useState(
+    player.fundedAmountCents != null ? (player.fundedAmountCents / 100).toFixed(2) : ''
+  )
   const [loading, setL]           = useState(false)
   const [error, setE]             = useState('')
 
@@ -126,14 +132,31 @@ function RecordResultsModal({ player, sessionId, defaultBuyInCents, onClose, onD
   const cashOutCents  = Math.round(parseFloat(cashOut) * 100)
   const netCents      = isNaN(investedCents) || isNaN(cashOutCents) ? null : cashOutCents - investedCents
 
+  // When a funder is chosen, default the covered amount to the full buy-in.
+  function chooseFunder(id: string) {
+    setFundedBy(id)
+    if (id && !fundedAmt) setFundedAmt(isNaN(investedCents) ? '' : (investedCents / 100).toFixed(2))
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     if (isNaN(investedCents) || investedCents <= 0) { setE('Enter a valid buy-in amount'); return }
     if (isNaN(cashOutCents) || cashOutCents < 0)    { setE('Enter a valid cash-out amount'); return }
+
+    let fundedByPlayerId: string | null = null
+    let fundedAmountCents: number | null = null
+    if (fundedBy) {
+      const amt = fundedAmt.trim() === '' ? investedCents : Math.round(parseFloat(fundedAmt) * 100)
+      if (isNaN(amt) || amt <= 0)         { setE('Enter a valid covered amount'); return }
+      if (amt > investedCents)            { setE('Covered amount can’t exceed the buy-in'); return }
+      fundedByPlayerId = fundedBy
+      fundedAmountCents = amt
+    }
+
     setL(true); setE('')
     const res = await fetch(`/api/sessions/${sessionId}/players/${player.id}`, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ totalBuyInCents: investedCents, cashOutCents, leftEarly }),
+      body: JSON.stringify({ totalBuyInCents: investedCents, cashOutCents, leftEarly, fundedByPlayerId, fundedAmountCents }),
     })
     if (!res.ok) { const d = await res.json(); setE(d.error ?? 'Failed'); setL(false); return }
     await onDone()
@@ -166,6 +189,27 @@ function RecordResultsModal({ player, sessionId, defaultBuyInCents, onClose, onD
           {netCents !== null && (
             <div className={`rounded-lg px-4 py-2.5 text-sm font-semibold text-center border ${netCents >= 0 ? 'bg-gold-50 border-gold-200 text-gold-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
               Net: <span className="tnum">{netCents >= 0 ? '+' : ''}{formatCents(netCents)}</span>
+            </div>
+          )}
+          {otherPlayers.length > 0 && (
+            <div>
+              <label className="block text-xs text-felt-400 uppercase tracking-wider mb-1.5">Buy-in covered by</label>
+              <select value={fundedBy} onChange={(e) => chooseFunder(e.target.value)} className={inputCls}>
+                <option value="">Own funds (default)</option>
+                {otherPlayers.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
+              </select>
+              {fundedBy && (
+                <div className="relative mt-2">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-felt-400 text-sm">$</span>
+                  <input type="number" min="0.01" step="0.01" value={fundedAmt}
+                    onChange={(e) => setFundedAmt(e.target.value)}
+                    placeholder="Amount they covered"
+                    className={`${inputCls} pl-8`} />
+                  <p className="text-felt-500 text-xs mt-1.5">
+                    {pName(player)} will owe {otherPlayers.find((o) => o.id === fundedBy)?.name} this amount, settled with the game.
+                  </p>
+                </div>
+              )}
             </div>
           )}
           <label className="flex items-center gap-3 cursor-pointer">
@@ -416,6 +460,11 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
   }
 
   const { players, settlementTransactions } = session
+  const nameById = new Map(players.map((p) => [p.id, pName(p)]))
+  const funderNote = (p: Player) =>
+    p.fundedByPlayerId && p.fundedAmountCents
+      ? `${formatCents(p.fundedAmountCents)} covered by ${nameById.get(p.fundedByPlayerId) ?? 'another player'}`
+      : null
   const totalBuyIns  = players.reduce((s, p) => s + buyTotal(p), 0)
   const totalCashOut = players.reduce((s, p) => s + (p.cashOutCents ?? 0), 0)
   const uncashed     = totalBuyIns - totalCashOut
@@ -568,6 +617,9 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
                         ) : (
                           <p className="text-felt-600 text-xs mt-1">Results not yet recorded</p>
                         )}
+                        {funderNote(p) && (
+                          <p className="text-felt-400 text-xs mt-1">{funderNote(p)}</p>
+                        )}
                       </div>
                       {isHost && (
                         <button onClick={() => setRecordFor(p)}
@@ -618,6 +670,7 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
                             {!p.userId && <span className="text-xs text-felt-500 bg-felt-700 rounded-full px-2 py-0.5">Guest</span>}
                           </div>
                           <p className="text-felt-500 text-xs mt-0.5"><span className="tnum">{formatCents(total)}</span> in · <span className="tnum">{formatCents(p.cashOutCents ?? 0)}</span> out</p>
+                          {funderNote(p) && <p className="text-felt-400 text-xs mt-0.5">{funderNote(p)}</p>}
                         </div>
                         <span className={`font-bold text-sm tnum ${net > 0 ? 'text-gold-400' : net < 0 ? 'text-red-600' : 'text-felt-400'}`}>
                           {net > 0 ? '+' : ''}{formatCents(net)}
@@ -652,6 +705,7 @@ export default function SessionView({ session: init, groupMembers, isHost, curre
       )}
       {recordFor && (
         <RecordResultsModal player={recordFor} sessionId={session.id} defaultBuyInCents={session.defaultBuyInCents}
+          otherPlayers={players.filter((p) => p.id !== recordFor.id).map((p) => ({ id: p.id, name: pName(p) }))}
           onClose={() => setRecordFor(null)} onDone={async () => { setRecordFor(null); await refresh() }} />
       )}
     </main>

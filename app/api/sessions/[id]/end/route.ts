@@ -59,12 +59,32 @@ export async function POST(
     )
   }
 
-  // Build net positions keyed by SessionPlayer ID
+  // Build net positions keyed by SessionPlayer ID.
+  // A player-funded buy-in still counts as the BUYER's buy-in here — the buyer's
+  // poker net is unchanged. The funding only creates a side-debt (built below).
   const playerNets = dbSession.players.map((p) => ({
     id: p.id,
     userId: p.userId,
     netCents: (p.cashOutCents ?? 0) - p.buyIns.reduce((sum, b) => sum + b.amountCents, 0),
   }))
+
+  // Player-funded buy-ins: the buyer (debtor) owes the funder (creditor) the
+  // covered amount. Folded into settlement alongside the poker nets so the final
+  // transactions settle the game results and the fronted buy-ins together.
+  const validPlayerIds = new Set(dbSession.players.map((p) => p.id))
+  const intraSessionDebts = dbSession.players
+    .filter(
+      (p) =>
+        p.fundedByPlayerId != null &&
+        p.fundedByPlayerId !== p.id &&
+        validPlayerIds.has(p.fundedByPlayerId) &&
+        (p.fundedAmountCents ?? 0) > 0
+    )
+    .map((p) => ({
+      debtorId: p.id,
+      creditorId: p.fundedByPlayerId!,
+      amountCents: p.fundedAmountCents!,
+    }))
 
   // Fold in carried balances if CARRY_FORWARD mode
   let priorCarried: { debtorId: string; creditorId: string; amountCents: number }[] = []
@@ -89,6 +109,7 @@ export async function POST(
     {
       roundingMode: dbSession.roundingMode as 'BOUNCE' | 'CARRY_FORWARD',
       priorCarriedBalances: priorCarried.length > 0 ? priorCarried : undefined,
+      intraSessionDebts: intraSessionDebts.length > 0 ? intraSessionDebts : undefined,
     }
   )
 

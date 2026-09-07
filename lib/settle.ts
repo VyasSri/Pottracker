@@ -15,6 +15,10 @@ export interface SettleOptions {
   roundingMode: RoundingMode;
   // Existing carried balances from prior sessions to fold into this settlement
   priorCarriedBalances?: CarriedBalance[];
+  // Debts created within this session (e.g. a player-funded buy-in, where the
+  // buyer owes the player who covered it). Folded into net positions identically
+  // to carried balances: the debtor owes more, the creditor is owed more.
+  intraSessionDebts?: CarriedBalance[];
 }
 
 export type TransactionKind = 'STANDARD' | 'BOUNCE_QUALIFIER' | 'BOUNCE_RETURN';
@@ -45,14 +49,21 @@ export function settle(players: Player[], opts: SettleOptions): SettlementPlan {
     netMap.set(p.id, p.netCents);
   }
 
+  // Both prior carried balances and intra-session debts adjust nets the same way:
+  // the creditor is owed more, the debtor owes more. Because each is a symmetric
+  // transfer between two ids, the total still sums to zero.
+  const foldDebt = (cb: CarriedBalance) => {
+    const creditorNet = netMap.get(cb.creditorId) ?? 0;
+    const debtorNet = netMap.get(cb.debtorId) ?? 0;
+    netMap.set(cb.creditorId, creditorNet + cb.amountCents);
+    netMap.set(cb.debtorId, debtorNet - cb.amountCents);
+  };
+
   if (opts.priorCarriedBalances) {
-    for (const cb of opts.priorCarriedBalances) {
-      // creditor is owed more, debtor owes more
-      const creditorNet = netMap.get(cb.creditorId) ?? 0;
-      const debtorNet = netMap.get(cb.debtorId) ?? 0;
-      netMap.set(cb.creditorId, creditorNet + cb.amountCents);
-      netMap.set(cb.debtorId, debtorNet - cb.amountCents);
-    }
+    for (const cb of opts.priorCarriedBalances) foldDebt(cb);
+  }
+  if (opts.intraSessionDebts) {
+    for (const cb of opts.intraSessionDebts) foldDebt(cb);
   }
 
   // 3. Minimum cash flow algorithm
